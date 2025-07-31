@@ -26,13 +26,22 @@ export class Movimiento {
   @Column({ length: 255, nullable: true })
   comprobante: string;
 
-  @ManyToOne(() => Proyecto, (proyecto) => proyecto.movimientos, { nullable: true })
+  @Column({ name: 'id_proyecto' })
+  id_proyecto: number;
+
+  @ManyToOne(() => Proyecto, (proyecto) => proyecto.movimientos)
   @JoinColumn({ name: 'id_proyecto' })
   proyecto: Proyecto;
+
+  @Column({ name: 'id_tarea', nullable: true })
+  id_tarea: number;
 
   @ManyToOne(() => Tarea, (tarea) => tarea.movimientos, { nullable: true })
   @JoinColumn({ name: 'id_tarea' })
   tarea: Tarea;
+
+  @Column({ name: 'id_donacion', nullable: true })
+  id_donacion: number;
 
   @ManyToOne(() => Donacion, (donacion) => donacion.movimientos, { nullable: true })
   @JoinColumn({ name: 'id_donacion' })

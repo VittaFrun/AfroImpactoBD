@@ -36,24 +36,26 @@ export class AuthService {
   //Registra un nuevo usuario
   async register(registerDto: RegisterUserDto) {
     const existingUser = await this.usersService.findOneByEmail(
-      registerDto.email,
+      registerDto.correo,
     );
     if (existingUser) {
       throw new ConflictException('El correo electrónico ya está en uso');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const hashedPassword = await bcrypt.hash(registerDto.contraseña, 10);
 
     const newUser = await this.usersService.create({
       nombre: registerDto.nombre,
-      email: registerDto.email,
-      password: hashedPassword,
+      correo: registerDto.correo,
+      contraseña: hashedPassword,
+      tipo_usuario: registerDto.tipo_usuario,
+      id_rol: registerDto.id_rol,
     });
 
     if (registerDto.tipo_usuario === 'voluntario') {
       await this.voluntarioService.createBasic(newUser.id_usuario);
     } else if (registerDto.tipo_usuario === 'organizacion') {
-      await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre);
+      await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
     }
 
     //Devuelve el usuario creado sin la contraseña

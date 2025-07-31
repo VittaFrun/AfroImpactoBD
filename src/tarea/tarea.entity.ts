@@ -18,9 +18,21 @@ export class Tarea {
   @Column('date', { name: 'fecha_fin' })
   fecha_fin: Date;
 
+  @Column({ type: 'enum', enum: ['Alta', 'Media', 'Baja'] })
+  prioridad: string;
+
+  @Column({ length: 100 })
+  complejidad: string;
+
+  @Column({ name: 'id_estado' })
+  id_estado: number;
+
   @ManyToOne(() => Estado, (estado) => estado.tareas)
   @JoinColumn({ name: 'id_estado' })
   estado: Estado;
+
+  @Column({ name: 'id_fase' })
+  id_fase: number;
 
   @ManyToOne(() => Fase, (fase) => fase.tareas)
   @JoinColumn({ name: 'id_fase' })

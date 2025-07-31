@@ -7,9 +7,15 @@ export class DonacionProyecto {
   @PrimaryGeneratedColumn({ name: 'id_donacion_proyecto' })
   id_donacion_proyecto: number;
 
+  @Column({ name: 'id_donacion' })
+  id_donacion: number;
+
   @ManyToOne(() => Donacion, (donacion) => donacion.donacionProyectos)
   @JoinColumn({ name: 'id_donacion' })
   donacion: Donacion;
+
+  @Column({ name: 'id_proyecto' })
+  id_proyecto: number;
 
   @ManyToOne(() => Proyecto, (proyecto) => proyecto.donacionProyectos)
   @JoinColumn({ name: 'id_proyecto' })

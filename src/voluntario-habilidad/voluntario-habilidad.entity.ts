@@ -20,4 +20,10 @@ export class VoluntarioHabilidad {
 
   @Column({ length: 50, name: 'tiempo_experiencia' })
   tiempo_experiencia: string;
+
+  @Column({ type: 'enum', enum: ['Básico', 'Intermedio', 'Avanzado'] })
+  nivel: string;
+
+  @Column({ default: false })
+  verificado: boolean;
 }

@@ -19,12 +19,10 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
-    // Asumiendo que el objeto de usuario en la solicitud tiene una propiedad 'rol' que es un objeto Rol
-    // y que el objeto Rol tiene una propiedad 'nombre'
-    if (!user || !user.rol || !user.rol.nombre) {
-      return false; // Si no hay usuario o rol, denegar acceso
+    if (!user || !user.tipo_usuario) {
+      return false; // Si no hay usuario o tipo_usuario, denegar acceso
     }
 
-    return requiredRoles.some((role) => user.rol.nombre === role);
+    return requiredRoles.some((role) => user.tipo_usuario === role);
   }
 }

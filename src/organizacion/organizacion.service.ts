@@ -15,12 +15,21 @@ export class OrganizacionService {
     private readonly usuarioRepo: Repository<Usuario>,
   ) {}
 
-  async createBasic(id_usuario: number, nombre: string): Promise<Organizacion> {
+  async createBasic(id_usuario: number, nombre: string, tipo: string): Promise<Organizacion> {
     const usuario = await this.usuarioRepo.findOne({ where: { id_usuario } });
     if (!usuario) {
       throw new Error('Usuario no encontrado');
     }
-    const organizacion = this.repo.create({ usuario, nombre });
+    const organizacion = this.repo.create({
+      usuario,
+      nombre,
+      tipo,
+      sitio_web: '',
+      pais: '',
+      ciudad: '',
+      areas_enfoque: '',
+      mision_vision: '',
+    });
     return this.repo.save(organizacion);
   }
 

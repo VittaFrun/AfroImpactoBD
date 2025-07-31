@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateProyectoDto {
   @IsString()
@@ -9,6 +9,14 @@ export class CreateProyectoDto {
   @IsNotEmpty()
   descripcion: string;
 
+  @IsString()
+  @IsNotEmpty()
+  objetivo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ubicacion: string;
+
   @IsDateString()
   @IsNotEmpty()
   fecha_inicio: string;
@@ -17,7 +25,11 @@ export class CreateProyectoDto {
   @IsNotEmpty()
   fecha_fin: string;
 
+  @IsString()
+  @IsOptional()
+  imagen_principal?: string;
+
   @IsNumber()
   @IsNotEmpty()
-  id_organizacion: number;
+  id_estado: number;
 }

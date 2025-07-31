@@ -16,6 +16,9 @@ export class Fase {
   @Column('int')
   orden: number;
 
+  @Column({ name: 'id_proyecto' })
+  id_proyecto: number;
+
   @ManyToOne(() => Proyecto, (proyecto) => proyecto.fases)
   @JoinColumn({ name: 'id_proyecto' })
   proyecto: Proyecto;

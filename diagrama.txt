@@ -1,0 +1,223 @@
+Table Usuario {
+  id_usuario int [pk, increment]
+  nombre varchar(100)
+  correo varchar(100) [unique]
+  contraseña varchar(255)
+  id_rol int
+  tipo_usuario varchar(50) // Ej: 'voluntario', 'organizacion', 'admin'
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table Rol {
+  id_rol int [pk, increment]
+  nombre varchar(100)
+  descripcion varchar(255)
+}
+
+Table Permiso {
+  id_permiso int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+}
+
+Table Rol_Permiso {
+  id_rol int
+  id_permiso int
+}
+
+Table Estado {
+  id_estado int [pk, increment]
+  nombre varchar(50) // Ej: 'Activo', 'Inactivo', 'Completado', 'Pendiente'
+}
+
+Table Voluntario {
+  id_voluntario int [pk, increment]
+  id_usuario int
+  id_jornada int
+  id_estado int
+  disponibilidad varchar(50)
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table Disponibilidad {
+  id_disponibilidad int [pk, increment]
+  id_voluntario int
+  dia_semana varchar(20)
+  hora_inicio time
+  hora_fin time
+}
+
+Table Jornada {
+  id_jornada int [pk, increment]
+  nombre varchar(50)
+}
+
+Table Habilidad {
+  id_habilidad int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+}
+
+Table Voluntario_Habilidad {
+  id_voluntario int [pk]
+  id_habilidad int [pk]
+  tiempo_experiencia varchar(50)
+  nivel enum('Básico', 'Intermedio', 'Avanzado')
+  verificado bool
+}
+
+Table Organizacion {
+  id_organizacion int [pk, increment]
+  id_usuario int
+  nombre varchar(100)
+  tipo varchar(50)
+  sitio_web varchar(255)
+  pais varchar(100)
+  ciudad varchar(100)
+  areas_enfoque text
+  mision_vision text
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table MetodoPago {
+  id_metodo int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+}
+
+Table Donacion {
+  id_donacion int [pk, increment]
+  id_organizacion int
+  id_metodo int
+  monto_total decimal(12,2)
+  fecha date
+  condiciones text
+  verificado bool
+  id_estado int
+}
+
+Table Donacion_Proyecto {
+  id_donacion_proyecto int [pk, increment]
+  id_donacion int
+  id_proyecto int
+  monto_asignado decimal(12,2)
+}
+
+Table Proyecto {
+  id_proyecto int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+  objetivo text
+  ubicacion varchar(100)
+  fecha_inicio date
+  fecha_fin date
+  imagen_principal varchar(255) // Ruta o URL de la imagen destacada
+  id_estado int // FK a Estado
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table Fase {
+  id_fase int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+  orden int
+  id_proyecto int
+}
+
+Table Tarea {
+  id_tarea int [pk, increment]
+  descripcion text
+  fecha_inicio date
+  fecha_fin date
+  prioridad enum('Alta', 'Media', 'Baja')
+  complejidad varchar(100)
+  id_estado int
+  id_fase int
+}
+
+Table Asignacion {
+  id_asignacion int [pk, increment]
+  id_tarea int
+  id_voluntario int
+  rol_asignado varchar(100)
+}
+
+Table Movimiento {
+  id_movimiento int [pk, increment]
+  tipo varchar(50) // 'recurso' o 'gasto'
+  descripcion text
+  cantidad int [note: 'Para recursos: unidades, para gastos: 1']
+  monto decimal(12,2)
+  fecha date
+  comprobante varchar(255)
+  id_proyecto int
+  id_tarea int // opcional
+  id_donacion int // opcional
+}
+
+Table Reporte {
+  id_reporte int [pk, increment]
+  tipo varchar(50)
+  fecha date
+  contenido text
+  id_proyecto int
+}
+
+Table Evaluacion {
+  id_evaluacion int [pk, increment]
+  id_voluntario int
+  id_proyecto int
+  puntuacion int
+  comentario text
+  fecha date
+}
+
+Table Archivo {
+  id_archivo int [pk, increment]
+  nombre varchar(255)
+  ruta varchar(255)
+  tipo varchar(50) // 'imagen', 'documento', 'comprobante', etc.
+  id_referencia int
+  tipo_referencia varchar(50) // 'proyecto', 'tarea', 'reporte', etc.
+}
+
+
+// Relaciones clave
+// Relación lógica: Proyecto puede tener muchos archivos
+// (mediante tipo_referencia = 'proyecto' y id_referencia = Proyecto.id_proyecto)
+
+Ref: Rol.id_rol < Usuario.id_rol
+Ref: Estado.id_estado < Voluntario.id_estado
+Ref: Estado.id_estado < Donacion.id_estado
+Ref: Estado.id_estado < Proyecto.id_estado
+Ref: Estado.id_estado < Tarea.id_estado
+
+Ref: Usuario.id_usuario - Voluntario.id_usuario
+Ref: Usuario.id_usuario - Organizacion.id_usuario
+Ref: Voluntario.id_jornada < Jornada.id_jornada
+
+Ref: Voluntario.id_voluntario < Voluntario_Habilidad.id_voluntario
+Ref: Habilidad.id_habilidad < Voluntario_Habilidad.id_habilidad
+Ref: Organizacion.id_organizacion > Donacion.id_organizacion
+Ref: MetodoPago.id_metodo < Donacion.id_metodo
+
+Ref: Donacion.id_donacion < Donacion_Proyecto.id_donacion
+Ref: Proyecto.id_proyecto < Donacion_Proyecto.id_proyecto
+
+Ref: Proyecto.id_proyecto > Fase.id_proyecto
+Ref: Fase.id_fase > Tarea.id_fase
+
+Ref: Tarea.id_tarea < Asignacion.id_tarea
+Ref: Voluntario.id_voluntario < Asignacion.id_voluntario
+
+Ref: Proyecto.id_proyecto > Reporte.id_proyecto
+Ref: Proyecto.id_proyecto > Movimiento.id_proyecto
+Ref: Tarea.id_tarea < Movimiento.id_tarea
+Ref: Donacion.id_donacion < Movimiento.id_donacion
+
+Ref: Proyecto.id_proyecto > Evaluacion.id_proyecto
+Ref: Voluntario.id_voluntario > Evaluacion.id_voluntario

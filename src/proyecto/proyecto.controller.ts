@@ -11,8 +11,6 @@ export class ProyectoController {
   constructor(private readonly service: ProyectoService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('organizacion')
   create(@Body() dto: CreateProyectoDto) {
     return this.service.create(dto);
   }

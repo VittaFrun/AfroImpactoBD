@@ -9,6 +9,11 @@ import { UsersModule } from './users/users.module'; // ruta corregida
 import { ProyectoModule } from './proyecto/proyecto.module';
 import { AuthModule } from './auth/auth.module';
 import { RolModule } from './rol/rol.module'; // <--- AÑADE ESTA LÍNEA
+import { PermisoModule } from './permiso/permiso.module';
+import { DisponibilidadModule } from './disponibilidad/disponibilidad.module';
+import { MetodoPagoModule } from './metodopago/metodopago.module';
+import { EvaluacionModule } from './evaluacion/evaluacion.module';
+import { ArchivoModule } from './archivo/archivo.module';
 
 @Module({
   imports: [
@@ -35,6 +40,11 @@ import { RolModule } from './rol/rol.module'; // <--- AÑADE ESTA LÍNEA
     ProyectoModule,
     AuthModule,
     RolModule, // <--- Y AÑADE ESTA LÍNEA AQUÍ
+    PermisoModule,
+    DisponibilidadModule,
+    MetodoPagoModule,
+    EvaluacionModule,
+    ArchivoModule,
   ],
 })
 export class AppModule {}

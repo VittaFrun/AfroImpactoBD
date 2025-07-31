@@ -15,6 +15,9 @@ export class Reporte {
   @Column('text')
   contenido: string;
 
+  @Column({ name: 'id_proyecto' })
+  id_proyecto: number;
+
   @ManyToOne(() => Proyecto, (proyecto) => proyecto.reportes)
   @JoinColumn({ name: 'id_proyecto' })
   proyecto: Proyecto;

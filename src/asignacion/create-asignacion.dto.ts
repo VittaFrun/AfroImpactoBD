@@ -1,3 +1,5 @@
 export class CreateAsignacionDto {
-  // propiedades aquí
+  id_tarea: number;
+  id_voluntario: number;
+  rol_asignado: string;
 }

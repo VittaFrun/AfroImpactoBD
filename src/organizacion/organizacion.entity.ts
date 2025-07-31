@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Usuario } from '../users/user.entity';
 import { Donacion } from '../donacion/donacion.entity';
 
@@ -6,6 +6,9 @@ import { Donacion } from '../donacion/donacion.entity';
 export class Organizacion {
   @PrimaryGeneratedColumn({ name: 'id_organizacion' })
   id_organizacion: number;
+
+  @Column({ name: 'id_usuario' })
+  id_usuario: number;
 
   @OneToOne(() => Usuario, (usuario) => usuario.organizacion)
   @JoinColumn({ name: 'id_usuario', referencedColumnName: 'id_usuario' })
@@ -31,6 +34,12 @@ export class Organizacion {
 
   @Column('text', { name: 'mision_vision' })
   mision_vision: string;
+
+  @CreateDateColumn({ name: 'creado_en' })
+  creado_en: Date;
+
+  @UpdateDateColumn({ name: 'actualizado_en' })
+  actualizado_en: Date;
 
   @OneToMany(() => Donacion, (donacion) => donacion.organizacion)
   donaciones: Donacion[];
