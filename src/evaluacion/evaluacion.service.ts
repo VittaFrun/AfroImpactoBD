@@ -1,36 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Evaluacion } from './evaluacion.entity';
 import { CreateEvaluacionDto } from './dto/create-evaluacion.dto';
-import { UpdateEvaluacionDto } from './dto/update-evaluacion.dto';
+import { Usuario } from '../users/user.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
+import { Voluntario } from '../voluntario/voluntario.entity';
 
 @Injectable()
 export class EvaluacionService {
   constructor(
     @InjectRepository(Evaluacion)
-    private readonly evaluacionRepository: Repository<Evaluacion>,
+    private readonly repo: Repository<Evaluacion>,
+    @InjectRepository(Proyecto)
+    private readonly proyectoRepo: Repository<Proyecto>,
+    @InjectRepository(Organizacion)
+    private readonly orgRepo: Repository<Organizacion>,
+    @InjectRepository(Voluntario)
+    private readonly voluntarioRepo: Repository<Voluntario>,
   ) {}
 
-  findAll(): Promise<Evaluacion[]> {
-    return this.evaluacionRepository.find({ relations: ['voluntario', 'proyecto'] });
+  async create(dto: CreateEvaluacionDto, user: Usuario) {
+    await this.checkOrganizacionOwnership(dto.id_proyecto, user);
+    const evaluacion = this.repo.create(dto);
+    return this.repo.save(evaluacion);
   }
 
-  findOne(id: number): Promise<Evaluacion> {
-    return this.evaluacionRepository.findOne({ where: { id_evaluacion: id }, relations: ['voluntario', 'proyecto'] });
+  findAllByProyecto(idProyecto: number) {
+    return this.repo.find({ where: { id_proyecto: idProyecto } });
   }
 
-  create(createEvaluacionDto: CreateEvaluacionDto): Promise<Evaluacion> {
-    const evaluacion = this.evaluacionRepository.create(createEvaluacionDto);
-    return this.evaluacionRepository.save(evaluacion);
+  async findAllByVoluntario(idVoluntario: number, user: Usuario) {
+    if (user.tipo_usuario === 'voluntario') {
+      const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario: user.id_usuario } });
+      if (!voluntario || voluntario.id_voluntario !== idVoluntario) {
+        throw new ForbiddenException('No tienes permiso para ver estas evaluaciones.');
+      }
+    }
+    return this.repo.find({ where: { id_voluntario: idVoluntario } });
   }
 
-  async update(id: number, updateEvaluacionDto: UpdateEvaluacionDto): Promise<Evaluacion> {
-    await this.evaluacionRepository.update(id, updateEvaluacionDto);
-    return this.findOne(id);
-  }
+  private async checkOrganizacionOwnership(id_proyecto: number, user: Usuario) {
+    if (user.tipo_usuario === 'admin') return;
 
-  async remove(id: number): Promise<void> {
-    await this.evaluacionRepository.delete(id);
+    const proyecto = await this.proyectoRepo.findOne({ where: { id_proyecto } });
+    if (!proyecto) {
+      throw new NotFoundException(`Proyecto con ID ${id_proyecto} no encontrado`);
+    }
+    const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+    if (!organizacion || proyecto.id_organizacion !== organizacion.id_organizacion) {
+      throw new ForbiddenException('No tienes permiso sobre este proyecto.');
+    }
   }
 }

@@ -116,6 +116,7 @@ Table Proyecto {
   fecha_fin date
   imagen_principal varchar(255) // Ruta o URL de la imagen destacada
   id_estado int // FK a Estado
+  id_organizacion int // FK a Organizacion
   creado_en datetime
   actualizado_en datetime
 }
@@ -221,3 +222,4 @@ Ref: Donacion.id_donacion < Movimiento.id_donacion
 
 Ref: Proyecto.id_proyecto > Evaluacion.id_proyecto
 Ref: Voluntario.id_voluntario > Evaluacion.id_voluntario
+Ref: Organizacion.id_organizacion < Proyecto.id_organizacion

@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
 import { EvaluacionService } from './evaluacion.service';
 import { CreateEvaluacionDto } from './dto/create-evaluacion.dto';
-import { UpdateEvaluacionDto } from './dto/update-evaluacion.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { GetUser } from '../common/decorators/get-user.decorator';
+import { Usuario } from '../users/user.entity';
 
-@Controller('evaluaciones')
+@Controller('evaluacion')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class EvaluacionController {
-  constructor(private readonly evaluacionService: EvaluacionService) {}
-
-  @Get()
-  findAll() {
-    return this.evaluacionService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.evaluacionService.findOne(+id);
-  }
+  constructor(private readonly service: EvaluacionService) {}
 
   @Post()
-  create(@Body() createEvaluacionDto: CreateEvaluacionDto) {
-    return this.evaluacionService.create(createEvaluacionDto);
+  @Roles('organizacion', 'admin')
+  create(@Body() dto: CreateEvaluacionDto, @GetUser() user: Usuario) {
+    return this.service.create(dto, user);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateEvaluacionDto: UpdateEvaluacionDto) {
-    return this.evaluacionService.update(+id, updateEvaluacionDto);
+  @Get('proyecto/:idProyecto')
+  @Roles('organizacion', 'admin')
+  findAllByProyecto(@Param('idProyecto') idProyecto: string) {
+    return this.service.findAllByProyecto(+idProyecto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.evaluacionService.remove(+id);
+  @Get('voluntario/:idVoluntario')
+  @Roles('organizacion', 'admin', 'voluntario')
+  findAllByVoluntario(@Param('idVoluntario') idVoluntario: string, @GetUser() user: Usuario) {
+    return this.service.findAllByVoluntario(+idVoluntario, user);
   }
 }

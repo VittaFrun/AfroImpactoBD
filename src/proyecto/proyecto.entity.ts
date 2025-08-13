@@ -5,6 +5,7 @@ import { DonacionProyecto } from '../donacion-proyecto/donacion-proyecto.entity'
 import { Movimiento } from '../movimiento/movimiento.entity';
 import { Reporte } from '../reporte/reporte.entity';
 import { Evaluacion } from '../evaluacion/evaluacion.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
 
 @Entity({ name: 'proyecto' })
 export class Proyecto {
@@ -38,6 +39,13 @@ export class Proyecto {
   @ManyToOne(() => Estado, (estado) => estado.proyectos)
   @JoinColumn({ name: 'id_estado' })
   estado: Estado;
+
+  @Column({ name: 'id_organizacion' })
+  id_organizacion: number;
+
+  @ManyToOne(() => Organizacion, (organizacion) => organizacion.proyectos)
+  @JoinColumn({ name: 'id_organizacion' })
+  organizacion: Organizacion;
 
   @CreateDateColumn({ name: 'creado_en' })
   creado_en: Date;

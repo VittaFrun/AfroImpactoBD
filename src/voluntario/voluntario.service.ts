@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Voluntario } from './voluntario.entity';
@@ -15,15 +15,6 @@ export class VoluntarioService {
     private readonly usuarioRepo: Repository<Usuario>,
   ) {}
 
-  async createBasic(id_usuario: number): Promise<Voluntario> {
-    const usuario = await this.usuarioRepo.findOne({ where: { id_usuario } });
-    if (!usuario) {
-      throw new Error('Usuario no encontrado');
-    }
-    const voluntario = this.repo.create({ usuario });
-    return this.repo.save(voluntario);
-  }
-
   create(dto: CreateVoluntarioDto) {
     return this.repo.save(dto);
   }
@@ -34,6 +25,20 @@ export class VoluntarioService {
 
   findOne(id: number) {
     return this.repo.findOne({ where: { id_voluntario: id } });
+  }
+
+  async findByUserId(id_usuario: number) {
+    const voluntario = await this.repo.findOne({ where: { id_usuario } });
+    if (!voluntario) {
+      throw new NotFoundException('Voluntario no encontrado');
+    }
+    return voluntario;
+  }
+
+  async updateByUserId(id_usuario: number, dto: UpdateVoluntarioDto) {
+    const voluntario = await this.findByUserId(id_usuario);
+    this.repo.merge(voluntario, dto);
+    return this.repo.save(voluntario);
   }
 
   update(id: number, dto: UpdateVoluntarioDto) {

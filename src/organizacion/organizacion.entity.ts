@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Usuario } from '../users/user.entity';
 import { Donacion } from '../donacion/donacion.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
 
 @Entity({ name: 'organizacion' })
 export class Organizacion {
@@ -43,4 +44,7 @@ export class Organizacion {
 
   @OneToMany(() => Donacion, (donacion) => donacion.organizacion)
   donaciones: Donacion[];
+
+  @OneToMany(() => Proyecto, (proyecto) => proyecto.organizacion)
+  proyectos: Proyecto[];
 }

@@ -1,34 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, UseGuards } from '@nestjs/common';
 import { AsignacionService } from './asignacion.service';
 import { CreateAsignacionDto } from './create-asignacion.dto';
-import { UpdateAsignacionDto } from './update-asignacion.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { GetUser } from '../common/decorators/get-user.decorator';
+import { Usuario } from '../users/user.entity';
 
 @Controller('asignacion')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class AsignacionController {
   constructor(private readonly service: AsignacionService) {}
 
   @Post()
-  create(@Body() dto: CreateAsignacionDto) {
-    return this.service.create(dto);
+  @Roles('organizacion', 'admin')
+  create(@Body() dto: CreateAsignacionDto, @GetUser() user: Usuario) {
+    return this.service.create(dto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.service.findAll();
+  @Get('tarea/:idTarea')
+  @Roles('organizacion', 'admin')
+  findAllByTarea(@Param('idTarea') idTarea: string) {
+    return this.service.findAllByTarea(+idTarea);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateAsignacionDto) {
-    return this.service.update(+id, dto);
+  @Get('voluntario/mis-tareas')
+  @Roles('voluntario')
+  findMyTasks(@GetUser() user: Usuario) {
+    return this.service.findTasksByVoluntario(user.id_usuario);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.service.remove(+id);
+  @Roles('organizacion', 'admin')
+  remove(@Param('id') id: string, @GetUser() user: Usuario) {
+    return this.service.remove(+id, user);
   }
 }

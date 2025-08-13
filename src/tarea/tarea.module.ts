@@ -3,9 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tarea } from './tarea.entity';
 import { TareaService } from './tarea.service';
 import { TareaController } from './tarea.controller';
+import { Fase } from '../fase/fase.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
+import { Voluntario } from '../voluntario/voluntario.entity';
+import { Asignacion } from '../asignacion/asignacion.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tarea])],
+  imports: [TypeOrmModule.forFeature([Tarea, Fase, Proyecto, Organizacion, Voluntario, Asignacion])],
   controllers: [TareaController],
   providers: [TareaService],
 })
