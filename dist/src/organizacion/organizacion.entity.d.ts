@@ -1,5 +1,6 @@
 import { Usuario } from '../users/user.entity';
 import { Donacion } from '../donacion/donacion.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
 export declare class Organizacion {
     id_organizacion: number;
     id_usuario: number;
@@ -14,4 +15,5 @@ export declare class Organizacion {
     creado_en: Date;
     actualizado_en: Date;
     donaciones: Donacion[];
+    proyectos: Proyecto[];
 }

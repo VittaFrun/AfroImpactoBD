@@ -23,22 +23,35 @@ let VoluntarioService = class VoluntarioService {
         this.repo = repo;
         this.usuarioRepo = usuarioRepo;
     }
-    async createBasic(id_usuario) {
-        const usuario = await this.usuarioRepo.findOne({ where: { id_usuario } });
-        if (!usuario) {
-            throw new Error('Usuario no encontrado');
-        }
-        const voluntario = this.repo.create({ usuario });
-        return this.repo.save(voluntario);
-    }
     create(dto) {
         return this.repo.save(dto);
+    }
+    createBasic(id_usuario) {
+        const newVoluntario = this.repo.create({
+            id_usuario,
+            id_jornada: 1,
+            id_estado: 1,
+            disponibilidad: 'No disponible',
+        });
+        return this.repo.save(newVoluntario);
     }
     findAll() {
         return this.repo.find();
     }
     findOne(id) {
         return this.repo.findOne({ where: { id_voluntario: id } });
+    }
+    async findByUserId(id_usuario) {
+        const voluntario = await this.repo.findOne({ where: { id_usuario } });
+        if (!voluntario) {
+            throw new common_1.NotFoundException('Voluntario no encontrado');
+        }
+        return voluntario;
+    }
+    async updateByUserId(id_usuario, dto) {
+        const voluntario = await this.findByUserId(id_usuario);
+        this.repo.merge(voluntario, dto);
+        return this.repo.save(voluntario);
     }
     update(id, dto) {
         return this.repo.update(id, dto);

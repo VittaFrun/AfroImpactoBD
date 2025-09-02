@@ -4,9 +4,9 @@ import { Organizacion } from '../organizacion/organizacion.entity';
 export declare class Usuario {
     id_usuario: number;
     nombre: string;
-    correo: string;
-    contraseña: string;
-    id_rol: number;
+    email: string;
+    password: string;
+    id_rol: number | null;
     rol: Rol;
     tipo_usuario: string;
     creado_en: Date;

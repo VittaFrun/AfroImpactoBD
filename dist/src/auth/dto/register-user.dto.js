@@ -23,13 +23,17 @@ __decorate([
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], RegisterUserDto.prototype, "correo", void 0);
+], RegisterUserDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(8, { message: 'La contraseña debe tener al menos 8 caracteres' }),
     __metadata("design:type", String)
-], RegisterUserDto.prototype, "contrase\u00F1a", void 0);
+], RegisterUserDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], RegisterUserDto.prototype, "id_rol", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),

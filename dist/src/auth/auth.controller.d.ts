@@ -12,8 +12,8 @@ export declare class AuthController {
     register(registerDto: RegisterUserDto): Promise<{
         id_usuario: number;
         nombre: string;
-        correo: string;
-        id_rol: number;
+        email: string;
+        id_rol: number | null;
         rol: import("../rol/rol.entity").Rol;
         tipo_usuario: string;
         creado_en: Date;

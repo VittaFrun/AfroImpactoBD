@@ -11,14 +11,14 @@ export class Usuario {
   @Column({ length: 100 })
   nombre: string;
 
-  @Column({ unique: true, length: 100, name: 'correo' })
-  correo: string;
+  @Column({ unique: true, length: 100, name: 'email' })
+  email: string;
 
-  @Column({ length: 255, name: 'contraseña' })
-  contraseña: string;
+  @Column({ length: 255, name: 'password' })
+  password: string;
 
-  @Column({ name: 'id_rol' })
-  id_rol: number;
+  @Column({ name: 'id_rol', nullable: true })
+  id_rol: number | null;
 
   @ManyToOne(() => Rol, (rol) => rol.usuarios)
   @JoinColumn({ name: 'id_rol' })

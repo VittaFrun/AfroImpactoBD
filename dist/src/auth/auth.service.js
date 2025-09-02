@@ -39,25 +39,30 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.UnauthorizedException('Credenciales inválidas');
         }
-        const isMatch = await bcrypt.compare(pass, user.contraseña);
+        const isMatch = await bcrypt.compare(pass, user.password);
         if (!isMatch) {
             throw new common_1.UnauthorizedException('Credenciales inválidas');
         }
-        const payload = { sub: user.id_usuario, email: user.correo };
+        const payload = {
+            sub: user.id_usuario,
+            nombre: user.nombre,
+            email: user.email,
+            tipo_usuario: user.tipo_usuario
+        };
         return {
             access_token: this.jwtService.sign(payload),
         };
     }
     async register(registerDto) {
-        const existingUser = await this.usersService.findOneByEmail(registerDto.correo);
+        const existingUser = await this.usersService.findOneByEmail(registerDto.email);
         if (existingUser) {
             throw new common_1.ConflictException('El correo electrónico ya está en uso');
         }
-        const hashedPassword = await bcrypt.hash(registerDto.contraseña, 10);
+        const hashedPassword = await bcrypt.hash(registerDto.password, 10);
         const newUser = await this.usersService.create({
             nombre: registerDto.nombre,
-            correo: registerDto.correo,
-            contraseña: hashedPassword,
+            email: registerDto.email,
+            password: hashedPassword,
             tipo_usuario: registerDto.tipo_usuario,
             id_rol: registerDto.id_rol,
         });
@@ -67,8 +72,23 @@ let AuthService = class AuthService {
         else if (registerDto.tipo_usuario === 'organizacion') {
             await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
         }
-        const { contraseña } = newUser, result = __rest(newUser, ["contrase\u00F1a"]);
+        const { password } = newUser, result = __rest(newUser, ["password"]);
         return result;
+    }
+    async getDashboardData(userPayload) {
+        console.log('Fetching initial dashboard data for user:', userPayload.sub);
+        return {
+            metrics: [
+                { title: "Proyectos Activos", value: "0", icon: "mdi-folder-heart", color: "primary" },
+                { title: "Voluntarios", value: "0", icon: "mdi-account-group", color: "success" },
+                { title: "Donaciones (Este Mes)", value: "$0", icon: "mdi-cash-multiple", color: "warning" },
+                { title: "Tareas Pendientes", value: "0", icon: "mdi-format-list-checks", color: "error" }
+            ],
+            recentActivities: [],
+            upcomingTasks: [],
+            projectStatusData: [],
+            donationTrendData: []
+        };
     }
 };
 exports.AuthService = AuthService;

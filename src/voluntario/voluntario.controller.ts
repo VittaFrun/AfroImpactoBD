@@ -1,6 +1,6 @@
 import { Controller, Get, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { VoluntarioService } from './voluntario.service';
-import { UpdateVoluntarioDto } from './dto/update-voluntario.dto';
+import { UpdateVoluntarioDto } from './update-voluntario.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';

@@ -15,14 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoluntarioController = void 0;
 const common_1 = require("@nestjs/common");
 const voluntario_service_1 = require("./voluntario.service");
-const create_voluntario_dto_1 = require("./create-voluntario.dto");
 const update_voluntario_dto_1 = require("./update-voluntario.dto");
+const passport_1 = require("@nestjs/passport");
+const roles_guard_1 = require("../common/guards/roles.guard");
+const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const get_user_decorator_1 = require("../common/decorators/get-user.decorator");
+const user_entity_1 = require("../users/user.entity");
 let VoluntarioController = class VoluntarioController {
     constructor(service) {
         this.service = service;
     }
-    create(dto) {
-        return this.service.create(dto);
+    getProfile(user) {
+        return this.service.findByUserId(user.id_usuario);
+    }
+    updateProfile(user, dto) {
+        return this.service.updateByUserId(user.id_usuario, dto);
     }
     findAll() {
         return this.service.findAll();
@@ -30,51 +37,43 @@ let VoluntarioController = class VoluntarioController {
     findOne(id) {
         return this.service.findOne(+id);
     }
-    update(id, dto) {
-        return this.service.update(+id, dto);
-    }
-    remove(id) {
-        return this.service.remove(+id);
-    }
 };
 exports.VoluntarioController = VoluntarioController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)('perfil'),
+    (0, roles_decorator_1.Roles)('voluntario'),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_voluntario_dto_1.CreateVoluntarioDto]),
+    __metadata("design:paramtypes", [user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
-], VoluntarioController.prototype, "create", null);
+], VoluntarioController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Patch)('perfil'),
+    (0, roles_decorator_1.Roles)('voluntario'),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.Usuario, update_voluntario_dto_1.UpdateVoluntarioDto]),
+    __metadata("design:returntype", void 0)
+], VoluntarioController.prototype, "updateProfile", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], VoluntarioController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], VoluntarioController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_voluntario_dto_1.UpdateVoluntarioDto]),
-    __metadata("design:returntype", void 0)
-], VoluntarioController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], VoluntarioController.prototype, "remove", null);
 exports.VoluntarioController = VoluntarioController = __decorate([
     (0, common_1.Controller)('voluntario'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [voluntario_service_1.VoluntarioService])
 ], VoluntarioController);
 //# sourceMappingURL=voluntario.controller.js.map

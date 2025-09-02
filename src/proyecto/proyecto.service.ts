@@ -25,8 +25,31 @@ export class ProyectoService {
     return this.repo.save(proyecto);
   }
 
-  findAll() {
-    return this.repo.find({ relations: ['organizacion'] });
+  // --- MÉTODO findAll() CORREGIDO ---
+  async findAll(user: Usuario) {
+    // Si el usuario es un admin, puede ver todos los proyectos
+    if (user.tipo_usuario === 'admin') {
+      return this.repo.find({ relations: ['organizacion'] });
+    }
+
+    // Si el usuario es una organización, busca solo sus proyectos
+    if (user.tipo_usuario === 'organizacion') {
+      const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+
+      if (!organizacion) {
+        // Si no se encuentra una organización para este usuario, no devuelve proyectos.
+        return [];
+      }
+
+      return this.repo.find({
+        where: { id_organizacion: organizacion.id_organizacion },
+        relations: ['organizacion'],
+      });
+    }
+
+    // Si es un voluntario, por ahora no devolvemos nada.
+    // Más adelante puedes implementar la lógica para que vea los proyectos en los que participa.
+    return [];
   }
 
   async findOne(id: number) {

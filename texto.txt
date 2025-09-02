@@ -1,0 +1,106 @@
+guía paso a paso con el código que necesitas para crear el endpoint /dashboard en tu backend de NestJS.
+
+  Usaremos la estructura que ya tienes. Añadiremos un nuevo "controlador" para manejar la ruta y extenderemos tu AuthService para manejar la lógica.
+
+  Paso 1: Crear el Controlador del Dashboard
+
+  Crea un nuevo archivo llamado dashboard.controller.ts en el mismo directorio que tu auth.service.ts. Pega el siguiente código en él:
+
+    1 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+    2 import { AuthGuard } from '@nestjs/passport';
+    3 import { AuthService } from './auth.service';
+    4
+    5 @Controller('dashboard')
+    6 export class DashboardController {
+    7   constructor(private authService: AuthService) {}
+    8
+    9   @UseGuards(AuthGuard('jwt'))
+   10   @Get()
+   11   async getDashboardData(@Request() req) {
+   12     // El decorador @UseGuards junto con @Request() nos da acceso
+   13     // a los datos del usuario que vienen en el payload del JWT.
+   14     return this.authService.getDashboardData(req.user);
+   15   }
+   16 }
+   * `@Controller('dashboard')`: Define que este controlador manejará la ruta /dashboard.
+   * `@UseGuards(AuthGuard('jwt'))`: Protege la ruta. Solo los usuarios con un JWT válido podrán acceder.
+   * `@Get()`: Especifica que el método getDashboardData manejará las solicitudes GET.
+
+  Paso 2: Añadir la Lógica al AuthService
+
+  Abre tu archivo auth.service.ts y añade el siguiente método dentro de la clase AuthService.
+
+    1 // Dentro de la clase AuthService en auth.service.ts
+    2
+    3 // NOTA: Probablemente necesites inyectar otros servicios
+    4 // (como ProjectService, DonationService, etc.) en el constructor de esta clase
+    5 // para poder obtener los datos reales de tu base de datos.
+    6
+    7 async getDashboardData(userPayload: any) {
+    8   // userPayload contiene los datos del JWT: { sub, email, tipo_usuario }
+    9   console.log('Fetching dashboard data for user:', userPayload.sub);
+   10
+   11   // --- IMPORTANTE ---
+   12   // El siguiente código usa datos de ejemplo.
+   13   // Debes reemplazarlo con la lógica real para consultar tu base de datos.
+   14
+   15   // Ejemplo: Contar proyectos activos para la organización del usuario
+   16   // const activeProjectsCount = await this.projectService.countActiveForOrg(userPayload.sub);
+   17   const activeProjectsCount = 12; // Reemplazar con datos reales
+   18
+   19   // Ejemplo: Contar voluntarios asociados
+   20   // const volunteerCount = await this.voluntarioService.countForOrg(userPayload.sub);
+   21   const volunteerCount = 84; // Reemplazar con datos reales
+   22
+   23   // Ejemplo: Sumar donaciones del mes
+   24   // const totalDonations = await this.donationService.sumThisMonthForOrg(userPayload.sub);
+   25   const totalDonationsThisMonth = "2,500"; // Reemplazar con datos reales
+   26
+   27   // Ejemplo: Contar tareas pendientes
+   28   // const pendingTasksCount = await this.taskService.countPendingForOrg(userPayload.sub);
+   29   const pendingTasksCount = 23; // Reemplazar con datos reales
+   30
+   31   // Este es el objeto JSON que el frontend espera recibir
+   32   return {
+   33     metrics: [
+   34       { title: "Proyectos Activos", value: `${activeProjectsCount}`, icon: "mdi-folder-heart", color: "primary" },
+   35       { title: "Voluntarios", value: `${volunteerCount}`, icon: "mdi-account-group", color: "success" },
+   36       { title: "Donaciones (Este Mes)", value: `$${totalDonationsThisMonth}`, icon: "mdi-cash-multiple", color: "warning" },
+   37       { title: "Tareas Pendientes", value: `${pendingTasksCount}`, icon: "mdi-format-list-checks", color: "error" }
+   38     ],
+   39     recentActivities: [
+   40       { icon: "mdi-account-plus", color: "success", text: "Nuevo voluntario 'Ana' se ha unido.", time: "hace 5 minutos" },
+   41       { icon: "mdi-folder-plus", color: "primary", text: "Proyecto 'Limpieza Costera' ha comenzado.", time: "hace 2 horas" }
+   42     ],
+   43     upcomingTasks: [
+   44       { title: "Reunión de planificación", project: "Proyecto Alpha", dueDate: "2025-09-05", status: "Pendiente", statusColor: "orange" }
+   45     ],
+   46     projectStatusData: [70, 20, 10],
+   47     donationTrendData: [5, 9, 7, 8, 4, 6]
+   48   };
+   49 }
+
+  Paso 3: Registrar el Nuevo Controlador
+
+  Finalmente, necesitas decirle a tu módulo de autenticación que el nuevo DashboardController existe. Abre tu archivo auth.module.ts (o el módulo principal de tu app) y añade
+  DashboardController al array controllers.
+
+    1 // En tu archivo auth.module.ts
+    2
+    3 import { Module } from '@nestjs/common';
+    4 import { AuthService } from './auth.service';
+    5 import { AuthController } from './auth.controller'; // o como se llame tu controlador de auth
+    6 import { DashboardController } from './dashboard.controller'; // <-- IMPORTA EL NUEVO CONTROLADOR
+    7 // ... otras importaciones
+    8
+    9 @Module({
+   10   imports: [
+   11     // ...
+   12   ],
+   13   providers: [AuthService, /* ... */],
+   14   controllers: [AuthController, DashboardController], // <-- AÑADE EL CONTROLADOR AQUÍ
+   15 })
+   16 export class AuthModule {}
+
+  Con estos tres cambios, tu backend tendrá un endpoint GET /dashboard protegido y funcional que devuelve los datos que el frontend necesita. Solo te queda reemplazar los datos de
+  ejemplo con tus consultas reales a la base de datos.

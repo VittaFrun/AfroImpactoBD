@@ -8,7 +8,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { Usuario } from '../users/user.entity';
 
-@Controller('proyecto')
+@Controller('projects') // <-- CORREGIDO
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class ProyectoController {
   constructor(private readonly service: ProyectoService) {}
@@ -21,8 +21,8 @@ export class ProyectoController {
 
   @Get()
   @Roles('organizacion', 'voluntario', 'admin')
-  findAll() {
-    return this.service.findAll();
+  findAll(@GetUser() user: Usuario) {
+    return this.service.findAll(user);
   }
 
   @Get(':id')

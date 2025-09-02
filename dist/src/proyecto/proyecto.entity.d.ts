@@ -4,6 +4,7 @@ import { DonacionProyecto } from '../donacion-proyecto/donacion-proyecto.entity'
 import { Movimiento } from '../movimiento/movimiento.entity';
 import { Reporte } from '../reporte/reporte.entity';
 import { Evaluacion } from '../evaluacion/evaluacion.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
 export declare class Proyecto {
     id_proyecto: number;
     nombre: string;
@@ -15,6 +16,8 @@ export declare class Proyecto {
     imagen_principal: string;
     id_estado: number;
     estado: Estado;
+    id_organizacion: number;
+    organizacion: Organizacion;
     creado_en: Date;
     actualizado_en: Date;
     fases: Fase[];

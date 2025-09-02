@@ -16,65 +16,55 @@ exports.EvaluacionController = void 0;
 const common_1 = require("@nestjs/common");
 const evaluacion_service_1 = require("./evaluacion.service");
 const create_evaluacion_dto_1 = require("./dto/create-evaluacion.dto");
-const update_evaluacion_dto_1 = require("./dto/update-evaluacion.dto");
+const passport_1 = require("@nestjs/passport");
+const roles_guard_1 = require("../common/guards/roles.guard");
+const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const get_user_decorator_1 = require("../common/decorators/get-user.decorator");
+const user_entity_1 = require("../users/user.entity");
 let EvaluacionController = class EvaluacionController {
-    constructor(evaluacionService) {
-        this.evaluacionService = evaluacionService;
+    constructor(service) {
+        this.service = service;
     }
-    findAll() {
-        return this.evaluacionService.findAll();
+    create(dto, user) {
+        return this.service.create(dto, user);
     }
-    findOne(id) {
-        return this.evaluacionService.findOne(+id);
+    findAllByProyecto(idProyecto) {
+        return this.service.findAllByProyecto(+idProyecto);
     }
-    create(createEvaluacionDto) {
-        return this.evaluacionService.create(createEvaluacionDto);
-    }
-    update(id, updateEvaluacionDto) {
-        return this.evaluacionService.update(+id, updateEvaluacionDto);
-    }
-    remove(id) {
-        return this.evaluacionService.remove(+id);
+    findAllByVoluntario(idVoluntario, user) {
+        return this.service.findAllByVoluntario(+idVoluntario, user);
     }
 };
 exports.EvaluacionController = EvaluacionController;
 __decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], EvaluacionController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], EvaluacionController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Post)(),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_evaluacion_dto_1.CreateEvaluacionDto]),
+    __metadata("design:paramtypes", [create_evaluacion_dto_1.CreateEvaluacionDto, user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], EvaluacionController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_evaluacion_dto_1.UpdateEvaluacionDto]),
-    __metadata("design:returntype", void 0)
-], EvaluacionController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('proyecto/:idProyecto'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('idProyecto')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], EvaluacionController.prototype, "remove", null);
+], EvaluacionController.prototype, "findAllByProyecto", null);
+__decorate([
+    (0, common_1.Get)('voluntario/:idVoluntario'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin', 'voluntario'),
+    __param(0, (0, common_1.Param)('idVoluntario')),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], EvaluacionController.prototype, "findAllByVoluntario", null);
 exports.EvaluacionController = EvaluacionController = __decorate([
-    (0, common_1.Controller)('evaluaciones'),
+    (0, common_1.Controller)('evaluacion'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [evaluacion_service_1.EvaluacionService])
 ], EvaluacionController);
 //# sourceMappingURL=evaluacion.controller.js.map

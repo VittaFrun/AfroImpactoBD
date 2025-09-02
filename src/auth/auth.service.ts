@@ -22,12 +22,18 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const isMatch = await bcrypt.compare(pass, user.contraseña);
+    const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const payload = { sub: user.id_usuario, email: user.correo };
+    const payload = {
+      sub: user.id_usuario,
+      nombre: user.nombre,
+      email: user.email,
+      tipo_usuario: user.tipo_usuario // <-- AÑADE ESTA LÍNEA
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -36,18 +42,18 @@ export class AuthService {
   //Registra un nuevo usuario
   async register(registerDto: RegisterUserDto) {
     const existingUser = await this.usersService.findOneByEmail(
-      registerDto.correo,
+      registerDto.email,
     );
     if (existingUser) {
       throw new ConflictException('El correo electrónico ya está en uso');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.contraseña, 10);
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
     const newUser = await this.usersService.create({
       nombre: registerDto.nombre,
-      correo: registerDto.correo,
-      contraseña: hashedPassword,
+      email: registerDto.email,
+      password: hashedPassword,
       tipo_usuario: registerDto.tipo_usuario,
       id_rol: registerDto.id_rol,
     });
@@ -59,7 +65,24 @@ export class AuthService {
     }
 
     //Devuelve el usuario creado sin la contraseña
-    const { contraseña, ...result } = newUser;
+    const { password, ...result } = newUser;
     return result;
+  }
+
+  async getDashboardData(userPayload: any) {
+    console.log('Fetching initial dashboard data for user:', userPayload.sub);
+
+    return {
+      metrics: [
+        { title: "Proyectos Activos", value: "0", icon: "mdi-folder-heart", color: "primary" },
+        { title: "Voluntarios", value: "0", icon: "mdi-account-group", color: "success" },
+        { title: "Donaciones (Este Mes)", value: "$0", icon: "mdi-cash-multiple", color: "warning" },
+        { title: "Tareas Pendientes", value: "0", icon: "mdi-format-list-checks", color: "error" }
+      ],
+      recentActivities: [], 
+      upcomingTasks: [],  
+      projectStatusData: [],
+      donationTrendData: [] 
+    };
   }
 }

@@ -2,12 +2,17 @@ import { Repository } from 'typeorm';
 import { Donacion } from './donacion.entity';
 import { CreateDonacionDto } from './create-donacion.dto';
 import { UpdateDonacionDto } from './update-donacion.dto';
+import { Usuario } from '../users/user.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
 export declare class DonacionService {
     private readonly repo;
-    constructor(repo: Repository<Donacion>);
-    create(dto: CreateDonacionDto): Promise<CreateDonacionDto & Donacion>;
+    private readonly orgRepo;
+    constructor(repo: Repository<Donacion>, orgRepo: Repository<Organizacion>);
+    create(dto: CreateDonacionDto, user: Usuario): Promise<Donacion>;
     findAll(): Promise<Donacion[]>;
-    findOne(id: number): Promise<Donacion>;
-    update(id: number, dto: UpdateDonacionDto): Promise<import("typeorm").UpdateResult>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    findAllByOrganizacion(id_organizacion: number, user: Usuario): Promise<Donacion[]>;
+    findOne(id: number, user: Usuario): Promise<Donacion>;
+    update(id: number, dto: UpdateDonacionDto, user: Usuario): Promise<Donacion>;
+    remove(id: number, user: Usuario): Promise<Donacion>;
+    private checkOrganizacionOwnership;
 }

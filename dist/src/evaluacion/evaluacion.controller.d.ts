@@ -1,12 +1,10 @@
 import { EvaluacionService } from './evaluacion.service';
 import { CreateEvaluacionDto } from './dto/create-evaluacion.dto';
-import { UpdateEvaluacionDto } from './dto/update-evaluacion.dto';
+import { Usuario } from '../users/user.entity';
 export declare class EvaluacionController {
-    private readonly evaluacionService;
-    constructor(evaluacionService: EvaluacionService);
-    findAll(): Promise<import("./evaluacion.entity").Evaluacion[]>;
-    findOne(id: string): Promise<import("./evaluacion.entity").Evaluacion>;
-    create(createEvaluacionDto: CreateEvaluacionDto): Promise<import("./evaluacion.entity").Evaluacion>;
-    update(id: string, updateEvaluacionDto: UpdateEvaluacionDto): Promise<import("./evaluacion.entity").Evaluacion>;
-    remove(id: string): Promise<void>;
+    private readonly service;
+    constructor(service: EvaluacionService);
+    create(dto: CreateEvaluacionDto, user: Usuario): Promise<import("./evaluacion.entity").Evaluacion>;
+    findAllByProyecto(idProyecto: string): Promise<import("./evaluacion.entity").Evaluacion[]>;
+    findAllByVoluntario(idVoluntario: string, user: Usuario): Promise<import("./evaluacion.entity").Evaluacion[]>;
 }

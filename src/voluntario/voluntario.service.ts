@@ -19,6 +19,16 @@ export class VoluntarioService {
     return this.repo.save(dto);
   }
 
+  createBasic(id_usuario: number) {
+    const newVoluntario = this.repo.create({
+      id_usuario,
+      id_jornada: 1,
+      id_estado: 1,
+      disponibilidad: 'No disponible',
+    });
+    return this.repo.save(newVoluntario);
+  }
+
   findAll() {
     return this.repo.find();
   }

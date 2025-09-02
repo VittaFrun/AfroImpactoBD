@@ -26,19 +26,22 @@ let UsersService = class UsersService {
     async create(createUserDto) {
         const user = this.usersRepository.create({
             nombre: createUserDto.nombre,
-            correo: createUserDto.correo,
-            contraseña: createUserDto.contraseña,
+            email: createUserDto.email,
+            password: createUserDto.password,
             id_rol: createUserDto.id_rol,
             tipo_usuario: createUserDto.tipo_usuario,
         });
         return this.usersRepository.save(user);
     }
     async findOneByEmail(email) {
-        const user = await this.usersRepository.findOne({ where: { correo: email } });
+        const user = await this.usersRepository.findOne({
+            where: { email: email },
+            select: ['id_usuario', 'nombre', 'email', 'password', 'id_rol', 'tipo_usuario', 'creado_en', 'actualizado_en'],
+        });
         return user !== null && user !== void 0 ? user : undefined;
     }
     async findOneByEmailWithRol(email) {
-        const user = await this.usersRepository.findOne({ where: { correo: email }, relations: ['rol'] });
+        const user = await this.usersRepository.findOne({ where: { email: email }, relations: ['rol'] });
         return user !== null && user !== void 0 ? user : undefined;
     }
     async addRolToUser(userId, rolId) {

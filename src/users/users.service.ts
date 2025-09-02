@@ -17,8 +17,8 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<Usuario> {
     const user = this.usersRepository.create({
       nombre: createUserDto.nombre,
-      correo: createUserDto.correo,
-      contraseña: createUserDto.contraseña,
+      email: createUserDto.email,
+      password: createUserDto.password,
       id_rol: createUserDto.id_rol,
       tipo_usuario: createUserDto.tipo_usuario,
     });
@@ -26,12 +26,15 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<Usuario | undefined> {
-    const user = await this.usersRepository.findOne({ where: { correo: email } });
+    const user = await this.usersRepository.findOne({
+      where: { email: email },
+      select: ['id_usuario', 'nombre', 'email', 'password', 'id_rol', 'tipo_usuario', 'creado_en', 'actualizado_en'],
+    });
     return user ?? undefined;
   }
 
   async findOneByEmailWithRol(email: string): Promise<Usuario | undefined> {
-    const user = await this.usersRepository.findOne({ where: { correo: email }, relations: ['rol'] });
+    const user = await this.usersRepository.findOne({ where: { email: email }, relations: ['rol'] });
     return user ?? undefined;
   }
 

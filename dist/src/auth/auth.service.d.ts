@@ -15,13 +15,25 @@ export declare class AuthService {
     register(registerDto: RegisterUserDto): Promise<{
         id_usuario: number;
         nombre: string;
-        correo: string;
-        id_rol: number;
+        email: string;
+        id_rol: number | null;
         rol: import("../rol/rol.entity").Rol;
         tipo_usuario: string;
         creado_en: Date;
         actualizado_en: Date;
         voluntario: import("../voluntario/voluntario.entity").Voluntario;
         organizacion: import("../organizacion/organizacion.entity").Organizacion;
+    }>;
+    getDashboardData(userPayload: any): Promise<{
+        metrics: {
+            title: string;
+            value: string;
+            icon: string;
+            color: string;
+        }[];
+        recentActivities: any[];
+        upcomingTasks: any[];
+        projectStatusData: any[];
+        donationTrendData: any[];
     }>;
 }

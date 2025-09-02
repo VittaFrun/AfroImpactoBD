@@ -17,6 +17,7 @@ const donacion_proyecto_entity_1 = require("../donacion-proyecto/donacion-proyec
 const movimiento_entity_1 = require("../movimiento/movimiento.entity");
 const reporte_entity_1 = require("../reporte/reporte.entity");
 const evaluacion_entity_1 = require("../evaluacion/evaluacion.entity");
+const organizacion_entity_1 = require("../organizacion/organizacion.entity");
 let Proyecto = class Proyecto {
 };
 exports.Proyecto = Proyecto;
@@ -61,6 +62,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'id_estado' }),
     __metadata("design:type", estado_entity_1.Estado)
 ], Proyecto.prototype, "estado", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'id_organizacion' }),
+    __metadata("design:type", Number)
+], Proyecto.prototype, "id_organizacion", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organizacion_entity_1.Organizacion, (organizacion) => organizacion.proyectos),
+    (0, typeorm_1.JoinColumn)({ name: 'id_organizacion' }),
+    __metadata("design:type", organizacion_entity_1.Organizacion)
+], Proyecto.prototype, "organizacion", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
     __metadata("design:type", Date)

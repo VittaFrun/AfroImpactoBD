@@ -16,65 +16,66 @@ exports.AsignacionController = void 0;
 const common_1 = require("@nestjs/common");
 const asignacion_service_1 = require("./asignacion.service");
 const create_asignacion_dto_1 = require("./create-asignacion.dto");
-const update_asignacion_dto_1 = require("./update-asignacion.dto");
+const passport_1 = require("@nestjs/passport");
+const roles_guard_1 = require("../common/guards/roles.guard");
+const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const get_user_decorator_1 = require("../common/decorators/get-user.decorator");
+const user_entity_1 = require("../users/user.entity");
 let AsignacionController = class AsignacionController {
     constructor(service) {
         this.service = service;
     }
-    create(dto) {
-        return this.service.create(dto);
+    create(dto, user) {
+        return this.service.create(dto, user);
     }
-    findAll() {
-        return this.service.findAll();
+    findAllByTarea(idTarea) {
+        return this.service.findAllByTarea(+idTarea);
     }
-    findOne(id) {
-        return this.service.findOne(+id);
+    findMyTasks(user) {
+        return this.service.findTasksByVoluntario(user.id_usuario);
     }
-    update(id, dto) {
-        return this.service.update(+id, dto);
-    }
-    remove(id) {
-        return this.service.remove(+id);
+    remove(id, user) {
+        return this.service.remove(+id, user);
     }
 };
 exports.AsignacionController = AsignacionController;
 __decorate([
     (0, common_1.Post)(),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_asignacion_dto_1.CreateAsignacionDto]),
+    __metadata("design:paramtypes", [create_asignacion_dto_1.CreateAsignacionDto, user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], AsignacionController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], AsignacionController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('tarea/:idTarea'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('idTarea')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], AsignacionController.prototype, "findOne", null);
+], AsignacionController.prototype, "findAllByTarea", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Get)('voluntario/mis-tareas'),
+    (0, roles_decorator_1.Roles)('voluntario'),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_asignacion_dto_1.UpdateAsignacionDto]),
+    __metadata("design:paramtypes", [user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
-], AsignacionController.prototype, "update", null);
+], AsignacionController.prototype, "findMyTasks", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], AsignacionController.prototype, "remove", null);
 exports.AsignacionController = AsignacionController = __decorate([
     (0, common_1.Controller)('asignacion'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [asignacion_service_1.AsignacionService])
 ], AsignacionController);
 //# sourceMappingURL=asignacion.controller.js.map

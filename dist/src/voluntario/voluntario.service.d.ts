@@ -7,10 +7,12 @@ export declare class VoluntarioService {
     private readonly repo;
     private readonly usuarioRepo;
     constructor(repo: Repository<Voluntario>, usuarioRepo: Repository<Usuario>);
-    createBasic(id_usuario: number): Promise<Voluntario>;
     create(dto: CreateVoluntarioDto): Promise<CreateVoluntarioDto & Voluntario>;
+    createBasic(id_usuario: number): Promise<Voluntario>;
     findAll(): Promise<Voluntario[]>;
     findOne(id: number): Promise<Voluntario>;
+    findByUserId(id_usuario: number): Promise<Voluntario>;
+    updateByUserId(id_usuario: number, dto: UpdateVoluntarioDto): Promise<Voluntario>;
     update(id: number, dto: UpdateVoluntarioDto): Promise<import("typeorm").UpdateResult>;
     remove(id: number): Promise<import("typeorm").DeleteResult>;
 }

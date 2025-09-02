@@ -12,12 +12,17 @@ const typeorm_1 = require("@nestjs/typeorm");
 const tarea_entity_1 = require("./tarea.entity");
 const tarea_service_1 = require("./tarea.service");
 const tarea_controller_1 = require("./tarea.controller");
+const fase_entity_1 = require("../fase/fase.entity");
+const proyecto_entity_1 = require("../proyecto/proyecto.entity");
+const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const voluntario_entity_1 = require("../voluntario/voluntario.entity");
+const asignacion_entity_1 = require("../asignacion/asignacion.entity");
 let TareaModule = class TareaModule {
 };
 exports.TareaModule = TareaModule;
 exports.TareaModule = TareaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([tarea_entity_1.Tarea])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([tarea_entity_1.Tarea, fase_entity_1.Fase, proyecto_entity_1.Proyecto, organizacion_entity_1.Organizacion, voluntario_entity_1.Voluntario, asignacion_entity_1.Asignacion])],
         controllers: [tarea_controller_1.TareaController],
         providers: [tarea_service_1.TareaService],
     })

@@ -17,32 +17,56 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const evaluacion_entity_1 = require("./evaluacion.entity");
+const proyecto_entity_1 = require("../proyecto/proyecto.entity");
+const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const voluntario_entity_1 = require("../voluntario/voluntario.entity");
 let EvaluacionService = class EvaluacionService {
-    constructor(evaluacionRepository) {
-        this.evaluacionRepository = evaluacionRepository;
+    constructor(repo, proyectoRepo, orgRepo, voluntarioRepo) {
+        this.repo = repo;
+        this.proyectoRepo = proyectoRepo;
+        this.orgRepo = orgRepo;
+        this.voluntarioRepo = voluntarioRepo;
     }
-    findAll() {
-        return this.evaluacionRepository.find({ relations: ['voluntario', 'proyecto'] });
+    async create(dto, user) {
+        await this.checkOrganizacionOwnership(dto.id_proyecto, user);
+        const evaluacion = this.repo.create(dto);
+        return this.repo.save(evaluacion);
     }
-    findOne(id) {
-        return this.evaluacionRepository.findOne({ where: { id_evaluacion: id }, relations: ['voluntario', 'proyecto'] });
+    findAllByProyecto(idProyecto) {
+        return this.repo.find({ where: { id_proyecto: idProyecto } });
     }
-    create(createEvaluacionDto) {
-        const evaluacion = this.evaluacionRepository.create(createEvaluacionDto);
-        return this.evaluacionRepository.save(evaluacion);
+    async findAllByVoluntario(idVoluntario, user) {
+        if (user.tipo_usuario === 'voluntario') {
+            const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario: user.id_usuario } });
+            if (!voluntario || voluntario.id_voluntario !== idVoluntario) {
+                throw new common_1.ForbiddenException('No tienes permiso para ver estas evaluaciones.');
+            }
+        }
+        return this.repo.find({ where: { id_voluntario: idVoluntario } });
     }
-    async update(id, updateEvaluacionDto) {
-        await this.evaluacionRepository.update(id, updateEvaluacionDto);
-        return this.findOne(id);
-    }
-    async remove(id) {
-        await this.evaluacionRepository.delete(id);
+    async checkOrganizacionOwnership(id_proyecto, user) {
+        if (user.tipo_usuario === 'admin')
+            return;
+        const proyecto = await this.proyectoRepo.findOne({ where: { id_proyecto } });
+        if (!proyecto) {
+            throw new common_1.NotFoundException(`Proyecto con ID ${id_proyecto} no encontrado`);
+        }
+        const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+        if (!organizacion || proyecto.id_organizacion !== organizacion.id_organizacion) {
+            throw new common_1.ForbiddenException('No tienes permiso sobre este proyecto.');
+        }
     }
 };
 exports.EvaluacionService = EvaluacionService;
 exports.EvaluacionService = EvaluacionService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(evaluacion_entity_1.Evaluacion)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(proyecto_entity_1.Proyecto)),
+    __param(2, (0, typeorm_1.InjectRepository)(organizacion_entity_1.Organizacion)),
+    __param(3, (0, typeorm_1.InjectRepository)(voluntario_entity_1.Voluntario)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], EvaluacionService);
 //# sourceMappingURL=evaluacion.service.js.map

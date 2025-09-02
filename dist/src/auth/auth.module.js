@@ -16,23 +16,30 @@ const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./jwt.strategy");
 const voluntario_module_1 = require("../voluntario/voluntario.module");
 const organizacion_module_1 = require("../organizacion/organizacion.module");
+const config_1 = require("@nestjs/config");
+const dashboard_controller_1 = require("./dashboard.controller");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule,
             users_module_1.UsersModule,
             passport_1.PassportModule,
-            jwt_1.JwtModule.register({
-                secret: 'tu_secreto_jwt',
-                signOptions: { expiresIn: '60m' },
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    secret: configService.get('JWT_SECRET'),
+                    signOptions: { expiresIn: '60m' },
+                }),
+                inject: [config_1.ConfigService],
             }),
             voluntario_module_1.VoluntarioModule,
             organizacion_module_1.OrganizacionModule,
         ],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, dashboard_controller_1.DashboardController],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

@@ -13,6 +13,7 @@ exports.Organizacion = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../users/user.entity");
 const donacion_entity_1 = require("../donacion/donacion.entity");
+const proyecto_entity_1 = require("../proyecto/proyecto.entity");
 let Organizacion = class Organizacion {
 };
 exports.Organizacion = Organizacion;
@@ -69,6 +70,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => donacion_entity_1.Donacion, (donacion) => donacion.organizacion),
     __metadata("design:type", Array)
 ], Organizacion.prototype, "donaciones", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => proyecto_entity_1.Proyecto, (proyecto) => proyecto.organizacion),
+    __metadata("design:type", Array)
+], Organizacion.prototype, "proyectos", void 0);
 exports.Organizacion = Organizacion = __decorate([
     (0, typeorm_1.Entity)({ name: 'organizacion' })
 ], Organizacion);

@@ -26,15 +26,15 @@ __decorate([
     __metadata("design:type", String)
 ], Usuario.prototype, "nombre", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true, length: 100, name: 'correo' }),
+    (0, typeorm_1.Column)({ unique: true, length: 100, name: 'email' }),
     __metadata("design:type", String)
-], Usuario.prototype, "correo", void 0);
+], Usuario.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 255, name: 'contraseña' }),
+    (0, typeorm_1.Column)({ length: 255, name: 'password' }),
     __metadata("design:type", String)
-], Usuario.prototype, "contrase\u00F1a", void 0);
+], Usuario.prototype, "password", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'id_rol' }),
+    (0, typeorm_1.Column)({ name: 'id_rol', nullable: true }),
     __metadata("design:type", Number)
 ], Usuario.prototype, "id_rol", void 0);
 __decorate([
