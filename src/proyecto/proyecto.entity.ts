@@ -24,14 +24,17 @@ export class Proyecto {
   @Column({ length: 100 })
   ubicacion: string;
 
-  @Column('datetime', { name: 'fecha_inicio' })
+  @Column('date', { name: 'fecha_inicio' })
   fecha_inicio: Date;
 
-  @Column('datetime', { name: 'fecha_fin' })
+  @Column('date', { name: 'fecha_fin' })
   fecha_fin: Date;
 
   @Column({ length: 255, name: 'imagen_principal', nullable: true })
   imagen_principal: string;
+
+  @Column({ length: 255, nullable: true })
+  documento: string;
 
   @Column({ name: 'id_estado' })
   id_estado: number;
