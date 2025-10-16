@@ -4,14 +4,14 @@
     "port": 3306,
     "username": "root",
     "password": "AdminM101*",
-    "database": "froimpacto_db",
+    "database": "afroimpacto_db",
     "synchronize": false,
     "logging": true,
     "entities": [
-        "dist/**/*.entity.js"
+        "dist/src/**/*.entity.js"
     ],
     "migrations": [
-        "dist/migration/**/*.js"
+        "dist/src/migration/**/*.js"
     ],
     "subscribers": [
         "dist/**/*.subscriber.js"

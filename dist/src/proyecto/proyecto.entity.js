@@ -42,17 +42,21 @@ __decorate([
     __metadata("design:type", String)
 ], Proyecto.prototype, "ubicacion", void 0);
 __decorate([
-    (0, typeorm_1.Column)('datetime', { name: 'fecha_inicio' }),
+    (0, typeorm_1.Column)('date', { name: 'fecha_inicio' }),
     __metadata("design:type", Date)
 ], Proyecto.prototype, "fecha_inicio", void 0);
 __decorate([
-    (0, typeorm_1.Column)('datetime', { name: 'fecha_fin' }),
+    (0, typeorm_1.Column)('date', { name: 'fecha_fin' }),
     __metadata("design:type", Date)
 ], Proyecto.prototype, "fecha_fin", void 0);
 __decorate([
     (0, typeorm_1.Column)({ length: 255, name: 'imagen_principal', nullable: true }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "imagen_principal", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 255, nullable: true }),
+    __metadata("design:type", String)
+], Proyecto.prototype, "documento", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_estado' }),
     __metadata("design:type", Number)
