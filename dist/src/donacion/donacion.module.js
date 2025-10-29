@@ -21,6 +21,7 @@ exports.DonacionModule = DonacionModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([donacion_entity_1.Donacion, organizacion_entity_1.Organizacion])],
         controllers: [donacion_controller_1.DonacionController],
         providers: [donacion_service_1.DonacionService],
+        exports: [donacion_service_1.DonacionService],
     })
 ], DonacionModule);
 //# sourceMappingURL=donacion.module.js.map

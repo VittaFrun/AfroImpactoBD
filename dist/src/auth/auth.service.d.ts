@@ -3,12 +3,16 @@ import { UsersService } from '../users/users.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { VoluntarioService } from '../voluntario/voluntario.service';
 import { OrganizacionService } from '../organizacion/organizacion.service';
+import { ProyectoService } from '../proyecto/proyecto.service';
+import { DonacionService } from '../donacion/donacion.service';
 export declare class AuthService {
     private usersService;
     private jwtService;
     private voluntarioService;
     private organizacionService;
-    constructor(usersService: UsersService, jwtService: JwtService, voluntarioService: VoluntarioService, organizacionService: OrganizacionService);
+    private proyectoService;
+    private donacionService;
+    constructor(usersService: UsersService, jwtService: JwtService, voluntarioService: VoluntarioService, organizacionService: OrganizacionService, proyectoService: ProyectoService, donacionService: DonacionService);
     login(email: string, pass: string): Promise<{
         access_token: string;
     }>;
@@ -25,12 +29,7 @@ export declare class AuthService {
         organizacion: import("../organizacion/organizacion.entity").Organizacion;
     }>;
     getDashboardData(userPayload: any): Promise<{
-        metrics: {
-            title: string;
-            value: string;
-            icon: string;
-            color: string;
-        }[];
+        metrics: any[];
         recentActivities: any[];
         upcomingTasks: any[];
         projectStatusData: any[];

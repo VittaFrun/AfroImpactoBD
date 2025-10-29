@@ -19,14 +19,14 @@ export class Voluntario {
   @JoinColumn({ name: 'id_usuario', referencedColumnName: 'id_usuario' })
   usuario: Usuario;
 
-  @Column({ name: 'id_jornada' })
+  @Column({ name: 'id_jornada', nullable: true })
   id_jornada: number;
 
   @ManyToOne(() => Jornada, (jornada) => jornada.voluntarios)
   @JoinColumn({ name: 'id_jornada' })
   jornada: Jornada;
 
-  @Column({ name: 'id_estado' })
+  @Column({ name: 'id_estado', nullable: true })
   id_estado: number;
 
   @ManyToOne(() => Estado, (estado) => estado.voluntarios)

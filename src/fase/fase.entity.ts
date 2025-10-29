@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Proyecto } from '../proyecto/proyecto.entity';
 import { Tarea } from '../tarea/tarea.entity';
 
@@ -22,6 +22,12 @@ export class Fase {
   @ManyToOne(() => Proyecto, (proyecto) => proyecto.fases)
   @JoinColumn({ name: 'id_proyecto' })
   proyecto: Proyecto;
+
+  @CreateDateColumn({ name: 'creado_en' })
+  creado_en: Date;
+
+  @UpdateDateColumn({ name: 'actualizado_en' })
+  actualizado_en: Date;
 
   @OneToMany(() => Tarea, (tarea) => tarea.fase)
   tareas: Tarea[];

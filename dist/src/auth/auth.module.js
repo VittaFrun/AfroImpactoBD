@@ -16,6 +16,8 @@ const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./jwt.strategy");
 const voluntario_module_1 = require("../voluntario/voluntario.module");
 const organizacion_module_1 = require("../organizacion/organizacion.module");
+const proyecto_module_1 = require("../proyecto/proyecto.module");
+const donacion_module_1 = require("../donacion/donacion.module");
 const config_1 = require("@nestjs/config");
 const dashboard_controller_1 = require("./dashboard.controller");
 let AuthModule = class AuthModule {
@@ -37,6 +39,8 @@ exports.AuthModule = AuthModule = __decorate([
             }),
             voluntario_module_1.VoluntarioModule,
             organizacion_module_1.OrganizacionModule,
+            proyecto_module_1.ProyectoModule,
+            donacion_module_1.DonacionModule,
         ],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
         controllers: [auth_controller_1.AuthController, dashboard_controller_1.DashboardController],

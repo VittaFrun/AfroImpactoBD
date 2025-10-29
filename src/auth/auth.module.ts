@@ -7,6 +7,8 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { VoluntarioModule } from '../voluntario/voluntario.module';
 import { OrganizacionModule } from '../organizacion/organizacion.module';
+import { ProyectoModule } from '../proyecto/proyecto.module';
+import { DonacionModule } from '../donacion/donacion.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DashboardController } from './dashboard.controller';
 
@@ -25,6 +27,8 @@ import { DashboardController } from './dashboard.controller';
     }),
     VoluntarioModule,
     OrganizacionModule,
+    ProyectoModule,
+    DonacionModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController, DashboardController],

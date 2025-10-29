@@ -21,6 +21,9 @@ const disponibilidad_module_1 = require("./disponibilidad/disponibilidad.module"
 const metodopago_module_1 = require("./metodopago/metodopago.module");
 const evaluacion_module_1 = require("./evaluacion/evaluacion.module");
 const archivo_module_1 = require("./archivo/archivo.module");
+const donacion_module_1 = require("./donacion/donacion.module");
+const organizacion_module_1 = require("./organizacion/organizacion.module");
+const voluntario_module_1 = require("./voluntario/voluntario.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +57,9 @@ exports.AppModule = AppModule = __decorate([
             metodopago_module_1.MetodoPagoModule,
             evaluacion_module_1.EvaluacionModule,
             archivo_module_1.ArchivoModule,
+            donacion_module_1.DonacionModule,
+            organizacion_module_1.OrganizacionModule,
+            voluntario_module_1.VoluntarioModule,
         ],
     })
 ], AppModule);

@@ -22,6 +22,8 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const get_user_decorator_1 = require("../common/decorators/get-user.decorator");
 const user_entity_1 = require("../users/user.entity");
+const create_fase_dto_1 = require("../fase/create-fase.dto");
+const create_tarea_dto_1 = require("../tarea/create-tarea.dto");
 let ProyectoController = class ProyectoController {
     constructor(service) {
         this.service = service;
@@ -40,6 +42,30 @@ let ProyectoController = class ProyectoController {
     }
     remove(id, user) {
         return this.service.remove(+id, user);
+    }
+    getPhases(id) {
+        return this.service.findOne(+id);
+    }
+    addPhase(id, dto, user) {
+        return this.service.addFase(+id, dto, user);
+    }
+    updatePhase(id, phaseId, dto, user) {
+        return this.service.updateFase(+id, +phaseId, dto, user);
+    }
+    removePhase(id, phaseId, user) {
+        return this.service.removeFase(+id, +phaseId, user);
+    }
+    getTasks(id) {
+        return this.service.findOne(+id);
+    }
+    addTask(id, dto, user) {
+        return this.service.addTarea(+id, dto, user);
+    }
+    updateTask(id, taskId, dto, user) {
+        return this.service.updateTarea(+id, +taskId, dto, user);
+    }
+    removeTask(id, taskId, user) {
+        return this.service.removeTarea(+id, +taskId, user);
     }
 };
 exports.ProyectoController = ProyectoController;
@@ -87,6 +113,84 @@ __decorate([
     __metadata("design:paramtypes", [String, user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], ProyectoController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id/phases'),
+    (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "getPhases", null);
+__decorate([
+    (0, common_1.Post)(':id/phases'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_fase_dto_1.CreateFaseDto, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "addPhase", null);
+__decorate([
+    (0, common_1.Put)(':id/phases/:phaseId'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('phaseId')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "updatePhase", null);
+__decorate([
+    (0, common_1.Delete)(':id/phases/:phaseId'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('phaseId')),
+    __param(2, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "removePhase", null);
+__decorate([
+    (0, common_1.Get)(':id/tasks'),
+    (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "getTasks", null);
+__decorate([
+    (0, common_1.Post)(':id/tasks'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_tarea_dto_1.CreateTareaDto, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "addTask", null);
+__decorate([
+    (0, common_1.Put)(':id/tasks/:taskId'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('taskId')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "updateTask", null);
+__decorate([
+    (0, common_1.Delete)(':id/tasks/:taskId'),
+    (0, roles_decorator_1.Roles)('organizacion', 'admin'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('taskId')),
+    __param(2, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "removeTask", null);
 exports.ProyectoController = ProyectoController = __decorate([
     (0, common_1.Controller)('projects'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),

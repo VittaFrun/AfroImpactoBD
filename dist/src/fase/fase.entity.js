@@ -42,6 +42,14 @@ __decorate([
     __metadata("design:type", proyecto_entity_1.Proyecto)
 ], Fase.prototype, "proyecto", void 0);
 __decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
+    __metadata("design:type", Date)
+], Fase.prototype, "creado_en", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'actualizado_en' }),
+    __metadata("design:type", Date)
+], Fase.prototype, "actualizado_en", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => tarea_entity_1.Tarea, (tarea) => tarea.fase),
     __metadata("design:type", Array)
 ], Fase.prototype, "tareas", void 0);

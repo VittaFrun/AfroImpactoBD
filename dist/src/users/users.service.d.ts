@@ -9,5 +9,6 @@ export declare class UsersService {
     create(createUserDto: CreateUserDto): Promise<Usuario>;
     findOneByEmail(email: string): Promise<Usuario | undefined>;
     findOneByEmailWithRol(email: string): Promise<Usuario | undefined>;
+    findOne(id: number): Promise<Usuario | undefined>;
     addRolToUser(userId: number, rolId: number): Promise<Usuario>;
 }

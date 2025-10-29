@@ -13,14 +13,17 @@ const proyecto_entity_1 = require("./proyecto.entity");
 const proyecto_service_1 = require("./proyecto.service");
 const proyecto_controller_1 = require("./proyecto.controller");
 const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const fase_entity_1 = require("../fase/fase.entity");
+const tarea_entity_1 = require("../tarea/tarea.entity");
 let ProyectoModule = class ProyectoModule {
 };
 exports.ProyectoModule = ProyectoModule;
 exports.ProyectoModule = ProyectoModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([proyecto_entity_1.Proyecto, organizacion_entity_1.Organizacion])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([proyecto_entity_1.Proyecto, organizacion_entity_1.Organizacion, fase_entity_1.Fase, tarea_entity_1.Tarea])],
         controllers: [proyecto_controller_1.ProyectoController],
         providers: [proyecto_service_1.ProyectoService],
+        exports: [proyecto_service_1.ProyectoService],
     })
 ], ProyectoModule);
 //# sourceMappingURL=proyecto.module.js.map

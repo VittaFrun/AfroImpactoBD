@@ -11,6 +11,7 @@ export declare class DonacionService {
     create(dto: CreateDonacionDto, user: Usuario): Promise<Donacion>;
     findAll(): Promise<Donacion[]>;
     findAllByOrganizacion(id_organizacion: number, user: Usuario): Promise<Donacion[]>;
+    findByOrganizacion(id_organizacion: number): Promise<Donacion[]>;
     findOne(id: number, user: Usuario): Promise<Donacion>;
     update(id: number, dto: UpdateDonacionDto, user: Usuario): Promise<Donacion>;
     remove(id: number, user: Usuario): Promise<Donacion>;

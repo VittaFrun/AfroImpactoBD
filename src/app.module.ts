@@ -14,6 +14,9 @@ import { DisponibilidadModule } from './disponibilidad/disponibilidad.module';
 import { MetodoPagoModule } from './metodopago/metodopago.module';
 import { EvaluacionModule } from './evaluacion/evaluacion.module';
 import { ArchivoModule } from './archivo/archivo.module';
+import { DonacionModule } from './donacion/donacion.module';
+import { OrganizacionModule } from './organizacion/organizacion.module';
+import { VoluntarioModule } from './voluntario/voluntario.module';
 
 @Module({
   imports: [
@@ -45,6 +48,9 @@ import { ArchivoModule } from './archivo/archivo.module';
     MetodoPagoModule,
     EvaluacionModule,
     ArchivoModule,
+    DonacionModule,
+    OrganizacionModule,
+    VoluntarioModule,
   ],
 })
 export class AppModule {}

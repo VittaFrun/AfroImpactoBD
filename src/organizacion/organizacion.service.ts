@@ -45,6 +45,10 @@ export class OrganizacionService {
     return this.repo.findOne({ where: { id_organizacion: id } });
   }
 
+  async findByUserId(id_usuario: number) {
+    return this.repo.findOne({ where: { id_usuario } });
+  }
+
   update(id: number, dto: UpdateOrganizacionDto) {
     return this.repo.update(id, dto);
   }

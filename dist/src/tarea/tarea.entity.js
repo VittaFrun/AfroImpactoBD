@@ -23,27 +23,27 @@ __decorate([
     __metadata("design:type", Number)
 ], Tarea.prototype, "id_tarea", void 0);
 __decorate([
-    (0, typeorm_1.Column)('text'),
+    (0, typeorm_1.Column)('text', { nullable: true }),
     __metadata("design:type", String)
 ], Tarea.prototype, "descripcion", void 0);
 __decorate([
-    (0, typeorm_1.Column)('date', { name: 'fecha_inicio' }),
+    (0, typeorm_1.Column)('date', { name: 'fecha_inicio', nullable: true }),
     __metadata("design:type", Date)
 ], Tarea.prototype, "fecha_inicio", void 0);
 __decorate([
-    (0, typeorm_1.Column)('date', { name: 'fecha_fin' }),
+    (0, typeorm_1.Column)('date', { name: 'fecha_fin', nullable: true }),
     __metadata("design:type", Date)
 ], Tarea.prototype, "fecha_fin", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['Alta', 'Media', 'Baja'] }),
+    (0, typeorm_1.Column)({ type: 'enum', enum: ['Alta', 'Media', 'Baja'], nullable: true }),
     __metadata("design:type", String)
 ], Tarea.prototype, "prioridad", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100 }),
+    (0, typeorm_1.Column)({ length: 100, nullable: true }),
     __metadata("design:type", String)
 ], Tarea.prototype, "complejidad", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'id_estado' }),
+    (0, typeorm_1.Column)({ name: 'id_estado', nullable: true }),
     __metadata("design:type", Number)
 ], Tarea.prototype, "id_estado", void 0);
 __decorate([
@@ -52,7 +52,7 @@ __decorate([
     __metadata("design:type", estado_entity_1.Estado)
 ], Tarea.prototype, "estado", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'id_fase' }),
+    (0, typeorm_1.Column)({ name: 'id_fase', nullable: true }),
     __metadata("design:type", Number)
 ], Tarea.prototype, "id_fase", void 0);
 __decorate([
@@ -60,6 +60,14 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'id_fase' }),
     __metadata("design:type", fase_entity_1.Fase)
 ], Tarea.prototype, "fase", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
+    __metadata("design:type", Date)
+], Tarea.prototype, "creado_en", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'actualizado_en' }),
+    __metadata("design:type", Date)
+], Tarea.prototype, "actualizado_en", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => asignacion_entity_1.Asignacion, (asignacion) => asignacion.tarea),
     __metadata("design:type", Array)

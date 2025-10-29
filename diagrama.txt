@@ -115,7 +115,8 @@ Table Proyecto {
   fecha_inicio date
   fecha_fin date
   imagen_principal varchar(255) // Ruta o URL de la imagen destacada
-  documento varchar(255)
+  documento varchar(255) [nullable]
+  presupuesto_total decimal(12,2) [default: 0] // Presupuesto total del proyecto
   id_estado int // FK a Estado
   id_organizacion int // FK a Organizacion
   creado_en datetime
@@ -128,6 +129,8 @@ Table Fase {
   descripcion text
   orden int
   id_proyecto int
+  creado_en datetime
+  actualizado_en datetime
 }
 
 Table Tarea {
@@ -139,6 +142,8 @@ Table Tarea {
   complejidad varchar(100)
   id_estado int
   id_fase int
+  creado_en datetime
+  actualizado_en datetime
 }
 
 Table Asignacion {
@@ -224,3 +229,12 @@ Ref: Donacion.id_donacion < Movimiento.id_donacion
 Ref: Proyecto.id_proyecto > Evaluacion.id_proyecto
 Ref: Voluntario.id_voluntario > Evaluacion.id_voluntario
 Ref: Organizacion.id_organizacion < Proyecto.id_organizacion
+
+// Índices para optimización de consultas
+Indexes {
+  (Proyecto.id_organizacion, Proyecto.id_estado) [name: 'idx_proyecto_org_estado']
+  (Proyecto.fecha_inicio, Proyecto.fecha_fin) [name: 'idx_proyecto_fechas']
+  (Fase.id_proyecto, Fase.orden) [name: 'idx_fase_proyecto_orden']
+  (Tarea.id_fase, Tarea.id_estado) [name: 'idx_tarea_fase_estado']
+  (Asignacion.id_tarea, Asignacion.id_voluntario) [name: 'idx_asignacion_tarea_voluntario']
+}

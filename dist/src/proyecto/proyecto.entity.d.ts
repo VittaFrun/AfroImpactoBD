@@ -15,6 +15,7 @@ export declare class Proyecto {
     fecha_fin: Date;
     imagen_principal: string;
     documento: string;
+    presupuesto_total: number;
     id_estado: number;
     estado: Estado;
     id_organizacion: number;

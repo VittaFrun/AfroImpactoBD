@@ -49,6 +49,9 @@ let OrganizacionService = class OrganizacionService {
     findOne(id) {
         return this.repo.findOne({ where: { id_organizacion: id } });
     }
+    async findByUserId(id_usuario) {
+        return this.repo.findOne({ where: { id_usuario } });
+    }
     update(id, dto) {
         return this.repo.update(id, dto);
     }

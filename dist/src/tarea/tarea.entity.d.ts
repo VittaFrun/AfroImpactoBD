@@ -13,6 +13,8 @@ export declare class Tarea {
     estado: Estado;
     id_fase: number;
     fase: Fase;
+    creado_en: Date;
+    actualizado_en: Date;
     asignaciones: Asignacion[];
     movimientos: Movimiento[];
 }

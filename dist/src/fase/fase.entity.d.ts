@@ -7,5 +7,7 @@ export declare class Fase {
     orden: number;
     id_proyecto: number;
     proyecto: Proyecto;
+    creado_en: Date;
+    actualizado_en: Date;
     tareas: Tarea[];
 }

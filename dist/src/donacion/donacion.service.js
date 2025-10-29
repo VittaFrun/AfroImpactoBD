@@ -41,6 +41,9 @@ let DonacionService = class DonacionService {
         }
         return this.repo.find({ where: { id_organizacion } });
     }
+    async findByOrganizacion(id_organizacion) {
+        return this.repo.find({ where: { id_organizacion } });
+    }
     async findOne(id, user) {
         const donacion = await this.repo.findOne({ where: { id_donacion: id } });
         if (!donacion) {

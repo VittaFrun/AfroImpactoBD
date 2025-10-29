@@ -26,19 +26,19 @@ __decorate([
     __metadata("design:type", Number)
 ], Proyecto.prototype, "id_proyecto", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100 }),
+    (0, typeorm_1.Column)({ length: 100, nullable: false }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "nombre", void 0);
 __decorate([
-    (0, typeorm_1.Column)('text'),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "descripcion", void 0);
 __decorate([
-    (0, typeorm_1.Column)('text'),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "objetivo", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100 }),
+    (0, typeorm_1.Column)({ length: 100, nullable: false }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "ubicacion", void 0);
 __decorate([
@@ -57,6 +57,10 @@ __decorate([
     (0, typeorm_1.Column)({ length: 255, nullable: true }),
     __metadata("design:type", String)
 ], Proyecto.prototype, "documento", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'presupuesto_total' }),
+    __metadata("design:type", Number)
+], Proyecto.prototype, "presupuesto_total", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_estado' }),
     __metadata("design:type", Number)

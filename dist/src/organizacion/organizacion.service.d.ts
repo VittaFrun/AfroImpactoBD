@@ -11,6 +11,7 @@ export declare class OrganizacionService {
     create(dto: CreateOrganizacionDto): Promise<CreateOrganizacionDto & Organizacion>;
     findAll(): Promise<Organizacion[]>;
     findOne(id: number): Promise<Organizacion>;
+    findByUserId(id_usuario: number): Promise<Organizacion>;
     update(id: number, dto: UpdateOrganizacionDto): Promise<import("typeorm").UpdateResult>;
     remove(id: number): Promise<import("typeorm").DeleteResult>;
 }

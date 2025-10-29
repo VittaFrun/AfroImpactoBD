@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:type", user_entity_1.Usuario)
 ], Voluntario.prototype, "usuario", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'id_jornada' }),
+    (0, typeorm_1.Column)({ name: 'id_jornada', nullable: true }),
     __metadata("design:type", Number)
 ], Voluntario.prototype, "id_jornada", void 0);
 __decorate([
@@ -44,7 +44,7 @@ __decorate([
     __metadata("design:type", jornada_entity_1.Jornada)
 ], Voluntario.prototype, "jornada", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'id_estado' }),
+    (0, typeorm_1.Column)({ name: 'id_estado', nullable: true }),
     __metadata("design:type", Number)
 ], Voluntario.prototype, "id_estado", void 0);
 __decorate([

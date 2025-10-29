@@ -44,6 +44,10 @@ let UsersService = class UsersService {
         const user = await this.usersRepository.findOne({ where: { email: email }, relations: ['rol'] });
         return user !== null && user !== void 0 ? user : undefined;
     }
+    async findOne(id) {
+        const user = await this.usersRepository.findOne({ where: { id_usuario: id } });
+        return user !== null && user !== void 0 ? user : undefined;
+    }
     async addRolToUser(userId, rolId) {
         const user = await this.usersRepository.findOne({ where: { id_usuario: userId }, relations: ['rol'] });
         if (!user) {

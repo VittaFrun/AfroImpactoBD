@@ -12,16 +12,16 @@ export class Proyecto {
   @PrimaryGeneratedColumn({ name: 'id_proyecto' })
   id_proyecto: number;
 
-  @Column({ length: 100 })
+  @Column({ length: 100, nullable: false })
   nombre: string;
 
-  @Column('text')
+  @Column('text', { nullable: false })
   descripcion: string;
 
-  @Column('text')
+  @Column('text', { nullable: false })
   objetivo: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 100, nullable: false })
   ubicacion: string;
 
   @Column('date', { name: 'fecha_inicio' })
@@ -35,6 +35,10 @@ export class Proyecto {
 
   @Column({ length: 255, nullable: true })
   documento: string;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'presupuesto_total' })
+  presupuesto_total: number;
+
 
   @Column({ name: 'id_estado' })
   id_estado: number;

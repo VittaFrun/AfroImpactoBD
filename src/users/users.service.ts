@@ -38,6 +38,11 @@ export class UsersService {
     return user ?? undefined;
   }
 
+  async findOne(id: number): Promise<Usuario | undefined> {
+    const user = await this.usersRepository.findOne({ where: { id_usuario: id } });
+    return user ?? undefined;
+  }
+
   async addRolToUser(userId: number, rolId: number): Promise<Usuario> {
     const user = await this.usersRepository.findOne({ where: { id_usuario: userId }, relations: ['rol'] });
     if (!user) {
