@@ -31,6 +31,7 @@ import { ProyectoBeneficioModule } from './proyecto-beneficio/proyecto-beneficio
 import { SolicitudInscripcionModule } from './solicitud-inscripcion/solicitud-inscripcion.module';
 import { FormularioInscripcionModule } from './formulario-inscripcion/formulario-inscripcion.module';
 import { DocumentoSolicitudModule } from './documento-solicitud/documento-solicitud.module';
+import { HorasVoluntariadasModule } from './horas-voluntariadas/horas-voluntariadas.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { DocumentoSolicitudModule } from './documento-solicitud/documento-solici
     DocumentoSolicitudModule,
     SolicitudInscripcionModule,
     FormularioInscripcionModule,
+    HorasVoluntariadasModule,
   ],
 })
 export class AppModule {}

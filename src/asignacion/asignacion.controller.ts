@@ -30,6 +30,12 @@ export class AsignacionController {
     return this.service.findTasksByVoluntario(user.id_usuario);
   }
 
+  @Get('voluntario/proyecto/:idProyecto')
+  @Roles('voluntario')
+  findAsignacionesByProyecto(@Param('idProyecto') idProyecto: string, @GetUser() user: Usuario) {
+    return this.service.findAsignacionesByProyecto(+idProyecto, user.id_usuario);
+  }
+
   @Delete(':id')
   @Roles('organizacion', 'admin')
   remove(@Param('id') id: string, @GetUser() user: Usuario) {

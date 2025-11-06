@@ -14,6 +14,7 @@ import { ProyectoBeneficio } from '../proyecto-beneficio/proyecto-beneficio.enti
 import { Asignacion } from '../asignacion/asignacion.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
 import { Rol } from '../rol/rol.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
 
 @Injectable()
 export class ProyectoService {
@@ -34,6 +35,8 @@ export class ProyectoService {
     private readonly voluntarioRepo: Repository<Voluntario>,
     @InjectRepository(Rol)
     private readonly rolRepo: Repository<Rol>,
+    @InjectRepository(HorasVoluntariadas)
+    private readonly horasRepo: Repository<HorasVoluntariadas>,
   ) {}
 
   async create(dto: CreateProyectoDto, user: Usuario) {
@@ -571,5 +574,76 @@ export class ProyectoService {
       console.error('Error en findProjectsByVoluntario:', error);
       return [];
     }
+  }
+
+  async findOneForVolunteer(id_proyecto: number, id_usuario: number) {
+    // Obtener el proyecto
+    const proyecto = await this.findOne(id_proyecto);
+    if (!proyecto) {
+      throw new NotFoundException(`Proyecto con ID ${id_proyecto} no encontrado`);
+    }
+
+    // Obtener el voluntario
+    const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario } });
+    if (!voluntario) {
+      throw new NotFoundException('Voluntario no encontrado');
+    }
+
+    // Obtener asignaciones del voluntario en este proyecto
+    const asignaciones = await this.asignacionRepo.find({
+      where: { id_voluntario: voluntario.id_voluntario },
+      relations: ['tarea', 'tarea.fase', 'tarea.estado', 'rol']
+    });
+
+    const asignacionesProyecto = asignaciones.filter(a => 
+      a.tarea?.fase?.id_proyecto === id_proyecto
+    );
+
+    // Obtener roles únicos asignados
+    const rolesAsignados = asignacionesProyecto
+      .map(a => a.rol)
+      .filter((rol, index, self) => 
+        rol && index === self.findIndex(r => r && r.id_rol === rol.id_rol)
+      );
+
+    // Obtener horas registradas del voluntario en este proyecto
+    const horas = await this.horasRepo.find({
+      where: {
+        id_voluntario: voluntario.id_voluntario,
+        id_proyecto: id_proyecto
+      },
+      relations: ['tarea'],
+      order: { fecha: 'DESC', creado_en: 'DESC' }
+    });
+
+    // Calcular resumen de horas
+    const totalHoras = horas.reduce((sum, h) => sum + parseFloat(h.horas_trabajadas.toString()), 0);
+    const horasVerificadas = horas.filter(h => h.verificada).reduce((sum, h) => sum + parseFloat(h.horas_trabajadas.toString()), 0);
+
+    // Calcular progreso personal (tareas completadas vs total asignadas)
+    const tareasCompletadas = asignacionesProyecto.filter(a => {
+      const estado = a.tarea?.estado;
+      return estado && (estado.nombre?.toLowerCase().includes('complet') || estado.nombre?.toLowerCase().includes('finaliz'));
+    }).length;
+
+    return {
+      ...proyecto,
+      rolesAsignados: rolesAsignados,
+      asignaciones: asignacionesProyecto,
+      horas: horas,
+      resumenHoras: {
+        totalHoras: parseFloat(totalHoras.toFixed(2)),
+        horasVerificadas: parseFloat(horasVerificadas.toFixed(2)),
+        horasPendientes: parseFloat((totalHoras - horasVerificadas).toFixed(2)),
+        totalRegistros: horas.length
+      },
+      progresoPersonal: {
+        tareasAsignadas: asignacionesProyecto.length,
+        tareasCompletadas: tareasCompletadas,
+        porcentajeCompletado: asignacionesProyecto.length > 0 
+          ? Math.round((tareasCompletadas / asignacionesProyecto.length) * 100)
+          : 0
+      }
+    };
   }
 }

@@ -37,7 +37,11 @@ export class ProyectoController {
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('organizacion', 'voluntario', 'admin')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @GetUser() user?: Usuario) {
+    // Si es voluntario, usar findOneForVolunteer para obtener información específica
+    if (user && user.tipo_usuario === 'voluntario') {
+      return this.service.findOneForVolunteer(+id, user.id_usuario);
+    }
     return this.service.findOne(+id);
   }
 

@@ -116,6 +116,26 @@ export class AsignacionService {
     });
   }
 
+  async findAsignacionesByProyecto(id_proyecto: number, id_usuario: number) {
+    const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario } });
+    if (!voluntario) {
+      throw new NotFoundException('Voluntario no encontrado');
+    }
+
+    // Obtener todas las asignaciones del voluntario
+    const asignaciones = await this.repo.find({
+      where: { id_voluntario: voluntario.id_voluntario },
+      relations: ['tarea', 'tarea.fase', 'tarea.estado', 'rol']
+    });
+
+    // Filtrar solo las que pertenecen al proyecto
+    const asignacionesProyecto = asignaciones.filter(a => 
+      a.tarea?.fase?.id_proyecto === id_proyecto
+    );
+
+    return asignacionesProyecto;
+  }
+
   async remove(id: number, user: Usuario) {
     const asignacion = await this.repo.findOne({ 
       where: { id_asignacion: id }, 
