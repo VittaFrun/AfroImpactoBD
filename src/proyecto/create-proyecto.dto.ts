@@ -48,7 +48,20 @@ export class CreateProyectoDto {
 
 
   @IsNumber({}, { message: 'El ID del estado debe ser un número válido' })
-  @IsNotEmpty()
-  @Transform(({ value }) => parseInt(value))
-  id_estado: number;
+  @IsOptional()
+  @Transform(({ value }) => value ? parseInt(value) : 1)
+  id_estado?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true' || value === 1)
+  es_publico?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @Length(0, 50, { message: 'La categoría no puede exceder 50 caracteres' })
+  categoria?: string;
+
+  @IsString()
+  @IsOptional()
+  requisitos?: string;
 }

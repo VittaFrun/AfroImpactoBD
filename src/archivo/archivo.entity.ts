@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity({ name: 'archivo' })
 export class Archivo {
@@ -19,4 +19,7 @@ export class Archivo {
 
   @Column({ length: 50, name: 'tipo_referencia' })
   tipo_referencia: string;
+
+  @CreateDateColumn({ name: 'creado_en' })
+  creado_en: Date;
 }

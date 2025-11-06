@@ -10,8 +10,6 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./users/user.entity");
-const rol_entity_1 = require("./rol/rol.entity");
 const users_module_1 = require("./users/users.module");
 const proyecto_module_1 = require("./proyecto/proyecto.module");
 const auth_module_1 = require("./auth/auth.module");
@@ -24,6 +22,20 @@ const archivo_module_1 = require("./archivo/archivo.module");
 const donacion_module_1 = require("./donacion/donacion.module");
 const organizacion_module_1 = require("./organizacion/organizacion.module");
 const voluntario_module_1 = require("./voluntario/voluntario.module");
+const asignacion_module_1 = require("./asignacion/asignacion.module");
+const tarea_module_1 = require("./tarea/tarea.module");
+const movimiento_module_1 = require("./movimiento/movimiento.module");
+const donacion_proyecto_module_1 = require("./donacion-proyecto/donacion-proyecto.module");
+const reporte_module_1 = require("./reporte/reporte.module");
+const jornada_module_1 = require("./jornada/jornada.module");
+const voluntario_habilidad_module_1 = require("./voluntario-habilidad/voluntario-habilidad.module");
+const habilidad_module_1 = require("./habilidad/habilidad.module");
+const fase_module_1 = require("./fase/fase.module");
+const estado_module_1 = require("./estado/estado.module");
+const proyecto_beneficio_module_1 = require("./proyecto-beneficio/proyecto-beneficio.module");
+const solicitud_inscripcion_module_1 = require("./solicitud-inscripcion/solicitud-inscripcion.module");
+const formulario_inscripcion_module_1 = require("./formulario-inscripcion/formulario-inscripcion.module");
+const documento_solicitud_module_1 = require("./documento-solicitud/documento-solicitud.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,7 +56,6 @@ exports.AppModule = AppModule = __decorate([
                     password: config.get('DB_PASSWORD'),
                     database: config.get('DB_DATABASE'),
                     autoLoadEntities: true,
-                    entities: [__dirname + '/**/*.entity{.ts,.js}', user_entity_1.Usuario, rol_entity_1.Rol],
                     synchronize: false,
                 }),
             }),
@@ -60,6 +71,20 @@ exports.AppModule = AppModule = __decorate([
             donacion_module_1.DonacionModule,
             organizacion_module_1.OrganizacionModule,
             voluntario_module_1.VoluntarioModule,
+            asignacion_module_1.AsignacionModule,
+            tarea_module_1.TareaModule,
+            movimiento_module_1.MovimientoModule,
+            donacion_proyecto_module_1.DonacionProyectoModule,
+            reporte_module_1.ReporteModule,
+            jornada_module_1.JornadaModule,
+            voluntario_habilidad_module_1.VoluntarioHabilidadModule,
+            habilidad_module_1.HabilidadModule,
+            fase_module_1.FaseModule,
+            estado_module_1.EstadoModule,
+            proyecto_beneficio_module_1.ProyectoBeneficioModule,
+            documento_solicitud_module_1.DocumentoSolicitudModule,
+            solicitud_inscripcion_module_1.SolicitudInscripcionModule,
+            formulario_inscripcion_module_1.FormularioInscripcionModule,
         ],
     })
 ], AppModule);

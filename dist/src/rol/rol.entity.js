@@ -13,6 +13,8 @@ exports.Rol = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../users/user.entity");
 const permiso_entity_1 = require("../permiso/permiso.entity");
+const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const proyecto_entity_1 = require("../proyecto/proyecto.entity");
 let Rol = class Rol {
 };
 exports.Rol = Rol;
@@ -28,6 +30,54 @@ __decorate([
     (0, typeorm_1.Column)({ length: 255 }),
     __metadata("design:type", String)
 ], Rol.prototype, "descripcion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['sistema', 'organizacion', 'proyecto'],
+        name: 'tipo_rol',
+        default: 'sistema'
+    }),
+    __metadata("design:type", String)
+], Rol.prototype, "tipo_rol", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'id_organizacion', nullable: true }),
+    __metadata("design:type", Number)
+], Rol.prototype, "id_organizacion", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => organizacion_entity_1.Organizacion, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_organizacion' }),
+    __metadata("design:type", organizacion_entity_1.Organizacion)
+], Rol.prototype, "organizacion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'id_proyecto', nullable: true }),
+    __metadata("design:type", Number)
+], Rol.prototype, "id_proyecto", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => proyecto_entity_1.Proyecto, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'id_proyecto' }),
+    __metadata("design:type", proyecto_entity_1.Proyecto)
+], Rol.prototype, "proyecto", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], Rol.prototype, "activo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'creado_por', nullable: true }),
+    __metadata("design:type", Number)
+], Rol.prototype, "creado_por", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.Usuario, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'creado_por' }),
+    __metadata("design:type", user_entity_1.Usuario)
+], Rol.prototype, "creador", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
+    __metadata("design:type", Date)
+], Rol.prototype, "creado_en", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'actualizado_en' }),
+    __metadata("design:type", Date)
+], Rol.prototype, "actualizado_en", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => user_entity_1.Usuario, (usuario) => usuario.rol),
     __metadata("design:type", Array)

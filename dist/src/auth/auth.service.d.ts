@@ -20,6 +20,7 @@ export declare class AuthService {
         id_usuario: number;
         nombre: string;
         email: string;
+        telefono: string;
         id_rol: number | null;
         rol: import("../rol/rol.entity").Rol;
         tipo_usuario: string;
@@ -27,6 +28,9 @@ export declare class AuthService {
         actualizado_en: Date;
         voluntario: import("../voluntario/voluntario.entity").Voluntario;
         organizacion: import("../organizacion/organizacion.entity").Organizacion;
+        preferencias: import("../preferencia-usuario/preferencia-usuario.entity").PreferenciaUsuario[];
+        configuracionesSeguridad: import("../configuracion-seguridad/configuracion-seguridad.entity").ConfiguracionSeguridad[];
+        integraciones: import("../integracion/integracion.entity").Integracion[];
     }>;
     getDashboardData(userPayload: any): Promise<{
         metrics: any[];

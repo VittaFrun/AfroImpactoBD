@@ -10,6 +10,10 @@ import { Fase } from '../fase/fase.entity';
 import { Tarea } from '../tarea/tarea.entity';
 import { CreateFaseDto } from '../fase/create-fase.dto';
 import { CreateTareaDto } from '../tarea/create-tarea.dto';
+import { ProyectoBeneficio } from '../proyecto-beneficio/proyecto-beneficio.entity';
+import { Asignacion } from '../asignacion/asignacion.entity';
+import { Voluntario } from '../voluntario/voluntario.entity';
+import { Rol } from '../rol/rol.entity';
 
 @Injectable()
 export class ProyectoService {
@@ -22,6 +26,14 @@ export class ProyectoService {
     private readonly faseRepo: Repository<Fase>,
     @InjectRepository(Tarea)
     private readonly tareaRepo: Repository<Tarea>,
+    @InjectRepository(ProyectoBeneficio)
+    private readonly beneficioRepo: Repository<ProyectoBeneficio>,
+    @InjectRepository(Asignacion)
+    private readonly asignacionRepo: Repository<Asignacion>,
+    @InjectRepository(Voluntario)
+    private readonly voluntarioRepo: Repository<Voluntario>,
+    @InjectRepository(Rol)
+    private readonly rolRepo: Repository<Rol>,
   ) {}
 
   async create(dto: CreateProyectoDto, user: Usuario) {
@@ -50,13 +62,28 @@ export class ProyectoService {
       throw new NotFoundException('Organizacion no encontrada para el usuario');
     }
     
+    // Validar que el estado existe, si no usar estado por defecto (1 = Activo)
+    let id_estado = dto.id_estado || 1;
+    if (id_estado === 0) {
+      // Si viene 0, usar estado activo por defecto
+      id_estado = 1;
+    }
+    
     const proyecto = this.repo.create({ 
-      ...dto, 
-      id_organizacion: organizacion.id_organizacion,
       nombre: dto.nombre.trim(),
       descripcion: dto.descripcion.trim(),
       objetivo: dto.objetivo.trim(),
-      ubicacion: dto.ubicacion.trim()
+      ubicacion: dto.ubicacion.trim(),
+      fecha_inicio: dto.fecha_inicio,
+      fecha_fin: dto.fecha_fin,
+      imagen_principal: dto.imagen_principal || null,
+      documento: dto.documento || null,
+      presupuesto_total: dto.presupuesto_total || 0,
+      categoria: dto.categoria || null,
+      es_publico: dto.es_publico !== undefined ? dto.es_publico : false,
+      requisitos: dto.requisitos || null,
+      id_estado: id_estado,
+      id_organizacion: organizacion.id_organizacion
     });
     
     return this.repo.save(proyecto);
@@ -64,11 +91,14 @@ export class ProyectoService {
 
   // --- MÉTODO findAll() CORREGIDO ---
   async findAll(user: Usuario) {
+    try {
     // Si el usuario es un admin, puede ver todos los proyectos
     if (user.tipo_usuario === 'admin') {
-      return this.repo.find({ 
-        relations: ['organizacion', 'estado', 'fases', 'fases.tareas'] 
+        const proyectos = await this.repo.find({ 
+          relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'beneficio'],
+          order: { creado_en: 'DESC' }
       });
+        return proyectos || [];
     }
 
     // Si el usuario es una organización, busca solo sus proyectos
@@ -80,26 +110,177 @@ export class ProyectoService {
         return [];
       }
 
-      return this.repo.find({
+        const proyectos = await this.repo.find({
         where: { id_organizacion: organizacion.id_organizacion },
-        relations: ['organizacion', 'estado', 'fases', 'fases.tareas'],
+        relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'beneficio'],
+          order: { creado_en: 'DESC' }
       });
+        return proyectos || [];
     }
 
-    // Si es un voluntario, por ahora no devolvemos nada.
-    // Más adelante puedes implementar la lógica para que vea los proyectos en los que participa.
+    // Si es un voluntario, devolver los proyectos en los que participa
+    if (user.tipo_usuario === 'voluntario') {
+      return this.findProjectsByVoluntario(user.id_usuario);
+    }
     return [];
+    } catch (error) {
+      console.error('Error en findAll proyectos:', error);
+      // Si hay un error al cargar las relaciones, intentar cargar sin las tareas
+      try {
+        if (user.tipo_usuario === 'admin') {
+          const proyectos = await this.repo.find({ 
+            relations: ['organizacion', 'estado', 'fases'],
+            order: { creado_en: 'DESC' }
+          });
+          // Cargar tareas manualmente
+          for (const proyecto of proyectos) {
+            if (proyecto.fases && proyecto.fases.length > 0) {
+              for (const fase of proyecto.fases) {
+                try {
+                  fase.tareas = await this.tareaRepo.find({
+                    where: { id_fase: fase.id_fase },
+                  });
+                } catch (tareaError) {
+                  console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+                  fase.tareas = [];
+                }
+              }
+            }
+          }
+          return proyectos || [];
+        }
+        if (user.tipo_usuario === 'organizacion') {
+          const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+          if (organizacion) {
+            const proyectos = await this.repo.find({
+              where: { id_organizacion: organizacion.id_organizacion },
+              relations: ['organizacion', 'estado', 'fases'],
+              order: { creado_en: 'DESC' }
+            });
+            // Cargar tareas manualmente
+            for (const proyecto of proyectos) {
+              if (proyecto.fases && proyecto.fases.length > 0) {
+                for (const fase of proyecto.fases) {
+                  try {
+                    fase.tareas = await this.tareaRepo.find({
+                      where: { id_fase: fase.id_fase },
+                    });
+                  } catch (tareaError) {
+                    console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+                    fase.tareas = [];
+                  }
+                }
+              }
+            }
+            return proyectos || [];
+          }
+        }
+      } catch (fallbackError) {
+        console.error('Error en fallback findAll:', fallbackError);
+      }
+      // Retornar array vacío en caso de error para no romper el frontend
+      return [];
+    }
   }
 
   async findOne(id: number) {
+    try {
     const proyecto = await this.repo.findOne({
       where: { id_proyecto: id },
-      relations: ['organizacion', 'estado', 'fases', 'fases.tareas'],
+      relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'fases.tareas.asignaciones', 'fases.tareas.asignaciones.rol', 'fases.tareas.asignaciones.voluntario', 'fases.tareas.asignaciones.voluntario.usuario', 'beneficio'],
     });
     if (!proyecto) {
       throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
     }
     return proyecto;
+    } catch (error) {
+      // Si hay un error al cargar las relaciones (por ejemplo, columnas faltantes),
+      // intentar cargar sin las tareas primero
+      console.error('Error loading proyecto with relations:', error);
+      const proyecto = await this.repo.findOne({
+        where: { id_proyecto: id },
+        relations: ['organizacion', 'estado', 'fases', 'beneficio'],
+      });
+      if (!proyecto) {
+        throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
+      }
+      // Cargar tareas manualmente si es necesario
+      if (proyecto.fases && proyecto.fases.length > 0) {
+        for (const fase of proyecto.fases) {
+          try {
+            const tareas = await this.tareaRepo.find({
+              where: { id_fase: fase.id_fase },
+              relations: ['asignaciones', 'asignaciones.rol', 'asignaciones.voluntario', 'asignaciones.voluntario.usuario'],
+            });
+            fase.tareas = tareas || [];
+          } catch (tareaError) {
+            console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+            fase.tareas = [];
+          }
+        }
+      }
+      return proyecto;
+    }
+  }
+
+  // Método para obtener proyectos públicos (sin autenticación)
+  async findPublicProjects() {
+    try {
+      // Buscar proyectos públicos que estén en estados que permiten inscripción de voluntarios:
+      // - id_estado: 1 = "activo"
+      // - id_estado: 7 = "en_progreso"
+      // - id_estado: 5 = "planificacion" (pueden estar abiertos a voluntarios)
+      // - id_estado: 6 = "pendiente" (pueden estar abiertos a voluntarios)
+      const proyectos = await this.repo.find({
+        where: [
+          {
+            es_publico: true,
+            id_estado: 1 // Estado activo
+          },
+          {
+            es_publico: true,
+            id_estado: 7 // Estado en_progreso
+          },
+          {
+            es_publico: true,
+            id_estado: 5 // Estado planificacion
+          },
+          {
+            es_publico: true,
+            id_estado: 6 // Estado pendiente
+          }
+        ],
+        relations: ['organizacion', 'estado', 'beneficio'],
+        order: { creado_en: 'DESC' }
+      });
+      return proyectos || [];
+    } catch (error) {
+      console.error('Error loading public projects:', error);
+      // Si falla la búsqueda con estados específicos, intentar solo con es_publico
+      try {
+        const proyectos = await this.repo.find({
+          where: {
+            es_publico: true
+          },
+          relations: ['organizacion', 'estado', 'beneficio'],
+          order: { creado_en: 'DESC' }
+        });
+        // Filtrar proyectos que no estén en estados terminales o inactivos
+        return proyectos.filter(p => {
+          const estadoNombre = p.estado?.nombre?.toLowerCase() || '';
+          const estadoId = p.id_estado;
+          // Excluir: inactivo (2), completado (3), cancelado (4), rechazada (9)
+          return estadoId !== 2 && 
+                 estadoId !== 3 && 
+                 estadoId !== 4 && 
+                 estadoId !== 9 &&
+                 !estadoNombre.includes('cerrado');
+        }) || [];
+      } catch (fallbackError) {
+        console.error('Error en fallback de findPublicProjects:', fallbackError);
+        return [];
+      }
+    }
   }
 
   async update(id: number, dto: UpdateProyectoDto, user: Usuario) {
@@ -110,7 +291,21 @@ export class ProyectoService {
       throw new ForbiddenException('No tienes permiso para actualizar este proyecto.');
     }
 
-    this.repo.merge(proyecto, dto);
+    // Actualizar campos explícitamente para asegurar que todos los campos se manejen correctamente
+    if (dto.nombre !== undefined) proyecto.nombre = dto.nombre.trim();
+    if (dto.descripcion !== undefined) proyecto.descripcion = dto.descripcion.trim();
+    if (dto.objetivo !== undefined) proyecto.objetivo = dto.objetivo.trim();
+    if (dto.ubicacion !== undefined) proyecto.ubicacion = dto.ubicacion.trim();
+    if (dto.fecha_inicio !== undefined) proyecto.fecha_inicio = typeof dto.fecha_inicio === 'string' ? new Date(dto.fecha_inicio) : dto.fecha_inicio;
+    if (dto.fecha_fin !== undefined) proyecto.fecha_fin = typeof dto.fecha_fin === 'string' ? new Date(dto.fecha_fin) : dto.fecha_fin;
+    if (dto.imagen_principal !== undefined) proyecto.imagen_principal = dto.imagen_principal;
+    if (dto.documento !== undefined) proyecto.documento = dto.documento;
+    if (dto.presupuesto_total !== undefined) proyecto.presupuesto_total = dto.presupuesto_total;
+    if (dto.categoria !== undefined) proyecto.categoria = dto.categoria;
+    if (dto.es_publico !== undefined) proyecto.es_publico = dto.es_publico;
+    if (dto.requisitos !== undefined) proyecto.requisitos = dto.requisitos;
+    if (dto.id_estado !== undefined) proyecto.id_estado = dto.id_estado;
+
     return this.repo.save(proyecto);
   }
 
@@ -133,13 +328,19 @@ export class ProyectoService {
       throw new ForbiddenException('No tienes permiso para agregar fases a este proyecto.');
     }
 
+    // Ensure id_proyecto is set from the URL parameter, not from DTO
     const fase = this.faseRepo.create({
-      ...dto,
-      id_proyecto: proyectoId,
+      nombre: dto.nombre.trim(),
+      descripcion: dto.descripcion.trim(),
+      orden: dto.orden,
+      id_proyecto: proyectoId, // Always use the URL parameter
     });
 
     const savedFase = await this.faseRepo.save(fase);
-    return this.findOne(proyectoId); // Retorna el proyecto completo con las fases
+    console.log(`Fase creada exitosamente:`, savedFase);
+    
+    // Return the full project with updated phases
+    return this.findOne(proyectoId);
   }
 
   async updateFase(proyectoId: number, faseId: number, dto: Partial<CreateFaseDto>, user: Usuario) {
@@ -247,5 +448,128 @@ export class ProyectoService {
 
     await this.tareaRepo.remove(tarea);
     return this.findOne(proyectoId);
+  }
+
+  // Método para obtener proyectos del voluntario con sus roles asignados
+  async findProjectsByVoluntario(id_usuario: number) {
+    try {
+      // Obtener el voluntario
+      const voluntario = await this.voluntarioRepo.findOne({ 
+        where: { id_usuario },
+        relations: ['usuario']
+      });
+      
+      if (!voluntario) {
+        console.log(`Voluntario no encontrado para usuario ${id_usuario}`);
+        return [];
+      }
+
+      console.log(`Buscando proyectos para voluntario ${voluntario.id_voluntario}`);
+
+      // Obtener todas las asignaciones del voluntario con relaciones
+      // Intentar cargar con relaciones, si falla, cargar sin relaciones y luego cargarlas manualmente
+      let asignaciones;
+      try {
+        asignaciones = await this.asignacionRepo.find({
+          where: { id_voluntario: voluntario.id_voluntario },
+          relations: ['tarea', 'tarea.fase', 'tarea.fase.proyecto', 'rol']
+        });
+      } catch (relationError) {
+        console.error('Error cargando asignaciones con relaciones:', relationError);
+        // Intentar cargar sin relaciones y luego cargarlas manualmente
+        asignaciones = await this.asignacionRepo.find({
+          where: { id_voluntario: voluntario.id_voluntario }
+        });
+        
+        // Cargar relaciones manualmente
+        for (const asignacion of asignaciones) {
+          try {
+            const tarea = await this.tareaRepo.findOne({
+              where: { id_tarea: asignacion.id_tarea },
+              relations: ['fase', 'fase.proyecto']
+            });
+            asignacion.tarea = tarea;
+            
+            // Cargar rol si existe id_rol
+            if (asignacion.id_rol) {
+              const rol = await this.rolRepo.findOne({
+                where: { id_rol: asignacion.id_rol }
+              });
+              asignacion.rol = rol;
+            }
+          } catch (loadError) {
+            console.error(`Error cargando relaciones para asignación ${asignacion.id_asignacion}:`, loadError);
+          }
+        }
+      }
+
+      console.log(`Encontradas ${asignaciones.length} asignaciones`);
+
+      if (asignaciones.length === 0) {
+        return [];
+      }
+
+    // Agrupar por proyecto y obtener roles únicos
+    const proyectosMap = new Map<number, any>();
+    
+    asignaciones.forEach(asignacion => {
+      const proyecto = asignacion.tarea?.fase?.proyecto;
+      if (!proyecto) return;
+
+      const proyectoId = proyecto.id_proyecto;
+      
+      if (!proyectosMap.has(proyectoId)) {
+        proyectosMap.set(proyectoId, {
+          proyecto: proyecto,
+          roles: new Set(),
+          rolesArray: []
+        });
+      }
+
+      // Agregar rol si existe
+      if (asignacion.rol) {
+        proyectosMap.get(proyectoId).roles.add(asignacion.rol.id_rol);
+      }
+    });
+
+    // Obtener proyectos completos con todas sus relaciones
+    const proyectosIds = Array.from(proyectosMap.keys());
+    const proyectos = await this.repo.find({
+      where: proyectosIds.map(id => ({ id_proyecto: id })),
+      relations: ['organizacion', 'estado', 'beneficio'],
+      order: { creado_en: 'DESC' }
+    });
+
+    // Combinar proyectos con roles asignados
+    return proyectos.map(proyecto => {
+      const proyectoData = proyectosMap.get(proyecto.id_proyecto);
+      const rolesIds = Array.from(proyectoData.roles);
+      
+      // Obtener roles completos
+      const rolesAsignados = asignaciones
+        .filter(a => {
+          const proyId = a.tarea?.fase?.proyecto?.id_proyecto;
+          return proyId === proyecto.id_proyecto && a.rol;
+        })
+        .map(a => ({
+          id_rol: a.rol.id_rol,
+          nombre: a.rol.nombre,
+          descripcion: a.rol.descripcion,
+          tipo_rol: a.rol.tipo_rol
+        }))
+        .filter((rol, index, self) => 
+          index === self.findIndex(r => r.id_rol === rol.id_rol)
+        );
+
+      return {
+        ...proyecto,
+        rolesAsignados: rolesAsignados,
+        roles: rolesAsignados.map(r => r.nombre).join(', ') // Para compatibilidad
+      };
+    });
+    } catch (error) {
+      console.error('Error en findProjectsByVoluntario:', error);
+      return [];
+    }
   }
 }

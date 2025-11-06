@@ -18,6 +18,12 @@ const movimiento_entity_1 = require("../movimiento/movimiento.entity");
 const reporte_entity_1 = require("../reporte/reporte.entity");
 const evaluacion_entity_1 = require("../evaluacion/evaluacion.entity");
 const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const horas_voluntariadas_entity_1 = require("../horas-voluntariadas/horas-voluntariadas.entity");
+const certificado_entity_1 = require("../certificado/certificado.entity");
+const proyecto_beneficio_entity_1 = require("../proyecto-beneficio/proyecto-beneficio.entity");
+const solicitud_inscripcion_entity_1 = require("../solicitud-inscripcion/solicitud-inscripcion.entity");
+const formulario_inscripcion_entity_1 = require("../formulario-inscripcion/formulario-inscripcion.entity");
+const rol_entity_1 = require("../rol/rol.entity");
 let Proyecto = class Proyecto {
 };
 exports.Proyecto = Proyecto;
@@ -42,6 +48,10 @@ __decorate([
     __metadata("design:type", String)
 ], Proyecto.prototype, "ubicacion", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Proyecto.prototype, "categoria", void 0);
+__decorate([
     (0, typeorm_1.Column)('date', { name: 'fecha_inicio' }),
     __metadata("design:type", Date)
 ], Proyecto.prototype, "fecha_inicio", void 0);
@@ -61,6 +71,14 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'presupuesto_total' }),
     __metadata("design:type", Number)
 ], Proyecto.prototype, "presupuesto_total", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'es_publico', default: true }),
+    __metadata("design:type", Boolean)
+], Proyecto.prototype, "es_publico", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Proyecto.prototype, "requisitos", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_estado' }),
     __metadata("design:type", Number)
@@ -107,6 +125,30 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => evaluacion_entity_1.Evaluacion, (evaluacion) => evaluacion.proyecto),
     __metadata("design:type", Array)
 ], Proyecto.prototype, "evaluaciones", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => horas_voluntariadas_entity_1.HorasVoluntariadas, (horasVoluntariadas) => horasVoluntariadas.proyecto),
+    __metadata("design:type", Array)
+], Proyecto.prototype, "horasVoluntariadas", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => certificado_entity_1.Certificado, (certificado) => certificado.proyecto),
+    __metadata("design:type", Array)
+], Proyecto.prototype, "certificados", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => proyecto_beneficio_entity_1.ProyectoBeneficio, (beneficio) => beneficio.proyecto),
+    __metadata("design:type", proyecto_beneficio_entity_1.ProyectoBeneficio)
+], Proyecto.prototype, "beneficio", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => solicitud_inscripcion_entity_1.SolicitudInscripcion, (solicitud) => solicitud.proyecto),
+    __metadata("design:type", Array)
+], Proyecto.prototype, "solicitudes", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => formulario_inscripcion_entity_1.FormularioInscripcion, (formulario) => formulario.proyecto),
+    __metadata("design:type", Array)
+], Proyecto.prototype, "formularios", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => rol_entity_1.Rol, (rol) => rol.proyecto),
+    __metadata("design:type", Array)
+], Proyecto.prototype, "roles", void 0);
 exports.Proyecto = Proyecto = __decorate([
     (0, typeorm_1.Entity)({ name: 'proyecto' })
 ], Proyecto);

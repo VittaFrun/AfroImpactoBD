@@ -11,8 +11,8 @@ const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [path.join(process.cwd(), 'dist', '**', '*.entity{.ts,.js}')],
-  migrations: [path.join(process.cwd(), 'dist', 'migration', '**', '*.js')],
+  entities: [path.join(process.cwd(), 'dist', 'src', '**', '*.entity.js')],
+  migrations: [path.join(process.cwd(), 'dist', 'src', 'migration', '**', '*.js')],
   synchronize: false,
   logging: true,
 });

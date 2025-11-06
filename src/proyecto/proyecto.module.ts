@@ -6,9 +6,15 @@ import { ProyectoController } from './proyecto.controller';
 import { Organizacion } from '../organizacion/organizacion.entity';
 import { Fase } from '../fase/fase.entity';
 import { Tarea } from '../tarea/tarea.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
+import { Certificado } from '../certificado/certificado.entity';
+import { ProyectoBeneficio } from '../proyecto-beneficio/proyecto-beneficio.entity';
+import { Asignacion } from '../asignacion/asignacion.entity';
+import { Voluntario } from '../voluntario/voluntario.entity';
+import { Rol } from '../rol/rol.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Proyecto, Organizacion, Fase, Tarea])],
+  imports: [TypeOrmModule.forFeature([Proyecto, Organizacion, Fase, Tarea, HorasVoluntariadas, Certificado, ProyectoBeneficio, Asignacion, Voluntario, Rol])],
   controllers: [ProyectoController],
   providers: [ProyectoService],
   exports: [ProyectoService],

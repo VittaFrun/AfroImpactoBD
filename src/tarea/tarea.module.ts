@@ -8,9 +8,10 @@ import { Proyecto } from '../proyecto/proyecto.entity';
 import { Organizacion } from '../organizacion/organizacion.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
 import { Asignacion } from '../asignacion/asignacion.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tarea, Fase, Proyecto, Organizacion, Voluntario, Asignacion])],
+  imports: [TypeOrmModule.forFeature([Tarea, Fase, Proyecto, Organizacion, Voluntario, Asignacion, HorasVoluntariadas])],
   controllers: [TareaController],
   providers: [TareaService],
 })

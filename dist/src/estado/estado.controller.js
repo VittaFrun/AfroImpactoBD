@@ -17,6 +17,9 @@ const common_1 = require("@nestjs/common");
 const estado_service_1 = require("./estado.service");
 const create_estado_dto_1 = require("./create-estado.dto");
 const update_estado_dto_1 = require("./update-estado.dto");
+const passport_1 = require("@nestjs/passport");
+const roles_guard_1 = require("../common/guards/roles.guard");
+const roles_decorator_1 = require("../common/decorators/roles.decorator");
 let EstadoController = class EstadoController {
     constructor(service) {
         this.service = service;
@@ -40,6 +43,7 @@ let EstadoController = class EstadoController {
 exports.EstadoController = EstadoController;
 __decorate([
     (0, common_1.Post)(),
+    (0, roles_decorator_1.Roles)('admin', 'organizacion'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_estado_dto_1.CreateEstadoDto]),
@@ -47,12 +51,14 @@ __decorate([
 ], EstadoController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, roles_decorator_1.Roles)('admin', 'organizacion', 'voluntario'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], EstadoController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, roles_decorator_1.Roles)('admin', 'organizacion', 'voluntario'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -60,6 +66,7 @@ __decorate([
 ], EstadoController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, roles_decorator_1.Roles)('admin', 'organizacion'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -68,6 +75,7 @@ __decorate([
 ], EstadoController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, roles_decorator_1.Roles)('admin', 'organizacion'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -75,6 +83,7 @@ __decorate([
 ], EstadoController.prototype, "remove", null);
 exports.EstadoController = EstadoController = __decorate([
     (0, common_1.Controller)('estado'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [estado_service_1.EstadoService])
 ], EstadoController);
 //# sourceMappingURL=estado.controller.js.map

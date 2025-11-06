@@ -28,6 +28,9 @@ let ProyectoController = class ProyectoController {
     constructor(service) {
         this.service = service;
     }
+    findPublicProjects() {
+        return this.service.findPublicProjects();
+    }
     create(dto, user) {
         return this.service.create(dto, user);
     }
@@ -70,7 +73,14 @@ let ProyectoController = class ProyectoController {
 };
 exports.ProyectoController = ProyectoController;
 __decorate([
+    (0, common_1.Get)('public'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ProyectoController.prototype, "findPublicProjects", null);
+__decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, get_user_decorator_1.GetUser)()),
@@ -80,6 +90,7 @@ __decorate([
 ], ProyectoController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
@@ -88,6 +99,7 @@ __decorate([
 ], ProyectoController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -96,6 +108,7 @@ __decorate([
 ], ProyectoController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -106,6 +119,7 @@ __decorate([
 ], ProyectoController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, get_user_decorator_1.GetUser)()),
@@ -115,6 +129,7 @@ __decorate([
 ], ProyectoController.prototype, "remove", null);
 __decorate([
     (0, common_1.Get)(':id/phases'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -123,6 +138,7 @@ __decorate([
 ], ProyectoController.prototype, "getPhases", null);
 __decorate([
     (0, common_1.Post)(':id/phases'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -133,6 +149,7 @@ __decorate([
 ], ProyectoController.prototype, "addPhase", null);
 __decorate([
     (0, common_1.Put)(':id/phases/:phaseId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('phaseId')),
@@ -144,6 +161,7 @@ __decorate([
 ], ProyectoController.prototype, "updatePhase", null);
 __decorate([
     (0, common_1.Delete)(':id/phases/:phaseId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('phaseId')),
@@ -154,6 +172,7 @@ __decorate([
 ], ProyectoController.prototype, "removePhase", null);
 __decorate([
     (0, common_1.Get)(':id/tasks'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -162,6 +181,7 @@ __decorate([
 ], ProyectoController.prototype, "getTasks", null);
 __decorate([
     (0, common_1.Post)(':id/tasks'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -172,6 +192,7 @@ __decorate([
 ], ProyectoController.prototype, "addTask", null);
 __decorate([
     (0, common_1.Put)(':id/tasks/:taskId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('taskId')),
@@ -183,6 +204,7 @@ __decorate([
 ], ProyectoController.prototype, "updateTask", null);
 __decorate([
     (0, common_1.Delete)(':id/tasks/:taskId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('taskId')),
@@ -193,7 +215,6 @@ __decorate([
 ], ProyectoController.prototype, "removeTask", null);
 exports.ProyectoController = ProyectoController = __decorate([
     (0, common_1.Controller)('projects'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [proyecto_service_1.ProyectoService])
 ], ProyectoController);
 //# sourceMappingURL=proyecto.controller.js.map

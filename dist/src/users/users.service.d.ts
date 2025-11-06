@@ -11,4 +11,5 @@ export declare class UsersService {
     findOneByEmailWithRol(email: string): Promise<Usuario | undefined>;
     findOne(id: number): Promise<Usuario | undefined>;
     addRolToUser(userId: number, rolId: number): Promise<Usuario>;
+    remove(id: number): Promise<void>;
 }

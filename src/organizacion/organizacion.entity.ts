@@ -2,6 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn
 import { Usuario } from '../users/user.entity';
 import { Donacion } from '../donacion/donacion.entity';
 import { Proyecto } from '../proyecto/proyecto.entity';
+import { FormularioInscripcion } from '../formulario-inscripcion/formulario-inscripcion.entity';
+import { Rol } from '../rol/rol.entity';
 
 @Entity({ name: 'organizacion' })
 export class Organizacion {
@@ -18,6 +20,9 @@ export class Organizacion {
   @Column({ length: 100 })
   nombre: string;
 
+  @Column({ length: 50, name: 'nombre_corto', nullable: true })
+  nombre_corto: string;
+
   @Column({ length: 50 })
   tipo: string;
 
@@ -30,11 +35,26 @@ export class Organizacion {
   @Column({ length: 100 })
   ciudad: string;
 
+  @Column('text', { nullable: true })
+  descripcion: string;
+
   @Column('text', { name: 'areas_enfoque' })
   areas_enfoque: string;
 
   @Column('text', { name: 'mision_vision' })
   mision_vision: string;
+
+  @Column({ length: 255, nullable: true })
+  logo: string;
+
+  @Column({ length: 7, name: 'color_primario', nullable: true })
+  color_primario: string;
+
+  @Column({ length: 7, name: 'color_secundario', nullable: true })
+  color_secundario: string;
+
+  @Column({ length: 20, default: 'claro' })
+  tema: string;
 
   @CreateDateColumn({ name: 'creado_en' })
   creado_en: Date;
@@ -47,4 +67,10 @@ export class Organizacion {
 
   @OneToMany(() => Proyecto, (proyecto) => proyecto.organizacion)
   proyectos: Proyecto[];
+
+  @OneToMany(() => FormularioInscripcion, (formulario) => formulario.organizacion)
+  formularios: FormularioInscripcion[];
+
+  @OneToMany(() => Rol, (rol) => rol.organizacion)
+  roles: Rol[];
 }

@@ -1,19 +1,29 @@
 import { Usuario } from '../users/user.entity';
 import { Donacion } from '../donacion/donacion.entity';
 import { Proyecto } from '../proyecto/proyecto.entity';
+import { FormularioInscripcion } from '../formulario-inscripcion/formulario-inscripcion.entity';
+import { Rol } from '../rol/rol.entity';
 export declare class Organizacion {
     id_organizacion: number;
     id_usuario: number;
     usuario: Usuario;
     nombre: string;
+    nombre_corto: string;
     tipo: string;
     sitio_web: string;
     pais: string;
     ciudad: string;
+    descripcion: string;
     areas_enfoque: string;
     mision_vision: string;
+    logo: string;
+    color_primario: string;
+    color_secundario: string;
+    tema: string;
     creado_en: Date;
     actualizado_en: Date;
     donaciones: Donacion[];
     proyectos: Proyecto[];
+    formularios: FormularioInscripcion[];
+    roles: Rol[];
 }

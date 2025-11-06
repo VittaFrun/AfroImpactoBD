@@ -20,12 +20,20 @@ const proyecto_entity_1 = require("./proyecto.entity");
 const organizacion_entity_1 = require("../organizacion/organizacion.entity");
 const fase_entity_1 = require("../fase/fase.entity");
 const tarea_entity_1 = require("../tarea/tarea.entity");
+const proyecto_beneficio_entity_1 = require("../proyecto-beneficio/proyecto-beneficio.entity");
+const asignacion_entity_1 = require("../asignacion/asignacion.entity");
+const voluntario_entity_1 = require("../voluntario/voluntario.entity");
+const rol_entity_1 = require("../rol/rol.entity");
 let ProyectoService = class ProyectoService {
-    constructor(repo, orgRepo, faseRepo, tareaRepo) {
+    constructor(repo, orgRepo, faseRepo, tareaRepo, beneficioRepo, asignacionRepo, voluntarioRepo, rolRepo) {
         this.repo = repo;
         this.orgRepo = orgRepo;
         this.faseRepo = faseRepo;
         this.tareaRepo = tareaRepo;
+        this.beneficioRepo = beneficioRepo;
+        this.asignacionRepo = asignacionRepo;
+        this.voluntarioRepo = voluntarioRepo;
+        this.rolRepo = rolRepo;
     }
     async create(dto, user) {
         if (!dto.nombre || dto.nombre.trim() === '') {
@@ -50,36 +58,202 @@ let ProyectoService = class ProyectoService {
         if (!organizacion) {
             throw new common_1.NotFoundException('Organizacion no encontrada para el usuario');
         }
-        const proyecto = this.repo.create(Object.assign(Object.assign({}, dto), { id_organizacion: organizacion.id_organizacion, nombre: dto.nombre.trim(), descripcion: dto.descripcion.trim(), objetivo: dto.objetivo.trim(), ubicacion: dto.ubicacion.trim() }));
+        let id_estado = dto.id_estado || 1;
+        if (id_estado === 0) {
+            id_estado = 1;
+        }
+        const proyecto = this.repo.create({
+            nombre: dto.nombre.trim(),
+            descripcion: dto.descripcion.trim(),
+            objetivo: dto.objetivo.trim(),
+            ubicacion: dto.ubicacion.trim(),
+            fecha_inicio: dto.fecha_inicio,
+            fecha_fin: dto.fecha_fin,
+            imagen_principal: dto.imagen_principal || null,
+            documento: dto.documento || null,
+            presupuesto_total: dto.presupuesto_total || 0,
+            categoria: dto.categoria || null,
+            es_publico: dto.es_publico !== undefined ? dto.es_publico : false,
+            requisitos: dto.requisitos || null,
+            id_estado: id_estado,
+            id_organizacion: organizacion.id_organizacion
+        });
         return this.repo.save(proyecto);
     }
     async findAll(user) {
-        if (user.tipo_usuario === 'admin') {
-            return this.repo.find({
-                relations: ['organizacion', 'estado', 'fases', 'fases.tareas']
-            });
-        }
-        if (user.tipo_usuario === 'organizacion') {
-            const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
-            if (!organizacion) {
-                return [];
+        try {
+            if (user.tipo_usuario === 'admin') {
+                const proyectos = await this.repo.find({
+                    relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'beneficio'],
+                    order: { creado_en: 'DESC' }
+                });
+                return proyectos || [];
             }
-            return this.repo.find({
-                where: { id_organizacion: organizacion.id_organizacion },
-                relations: ['organizacion', 'estado', 'fases', 'fases.tareas'],
-            });
+            if (user.tipo_usuario === 'organizacion') {
+                const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+                if (!organizacion) {
+                    return [];
+                }
+                const proyectos = await this.repo.find({
+                    where: { id_organizacion: organizacion.id_organizacion },
+                    relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'beneficio'],
+                    order: { creado_en: 'DESC' }
+                });
+                return proyectos || [];
+            }
+            if (user.tipo_usuario === 'voluntario') {
+                return this.findProjectsByVoluntario(user.id_usuario);
+            }
+            return [];
         }
-        return [];
+        catch (error) {
+            console.error('Error en findAll proyectos:', error);
+            try {
+                if (user.tipo_usuario === 'admin') {
+                    const proyectos = await this.repo.find({
+                        relations: ['organizacion', 'estado', 'fases'],
+                        order: { creado_en: 'DESC' }
+                    });
+                    for (const proyecto of proyectos) {
+                        if (proyecto.fases && proyecto.fases.length > 0) {
+                            for (const fase of proyecto.fases) {
+                                try {
+                                    fase.tareas = await this.tareaRepo.find({
+                                        where: { id_fase: fase.id_fase },
+                                    });
+                                }
+                                catch (tareaError) {
+                                    console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+                                    fase.tareas = [];
+                                }
+                            }
+                        }
+                    }
+                    return proyectos || [];
+                }
+                if (user.tipo_usuario === 'organizacion') {
+                    const organizacion = await this.orgRepo.findOne({ where: { id_usuario: user.id_usuario } });
+                    if (organizacion) {
+                        const proyectos = await this.repo.find({
+                            where: { id_organizacion: organizacion.id_organizacion },
+                            relations: ['organizacion', 'estado', 'fases'],
+                            order: { creado_en: 'DESC' }
+                        });
+                        for (const proyecto of proyectos) {
+                            if (proyecto.fases && proyecto.fases.length > 0) {
+                                for (const fase of proyecto.fases) {
+                                    try {
+                                        fase.tareas = await this.tareaRepo.find({
+                                            where: { id_fase: fase.id_fase },
+                                        });
+                                    }
+                                    catch (tareaError) {
+                                        console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+                                        fase.tareas = [];
+                                    }
+                                }
+                            }
+                        }
+                        return proyectos || [];
+                    }
+                }
+            }
+            catch (fallbackError) {
+                console.error('Error en fallback findAll:', fallbackError);
+            }
+            return [];
+        }
     }
     async findOne(id) {
-        const proyecto = await this.repo.findOne({
-            where: { id_proyecto: id },
-            relations: ['organizacion', 'estado', 'fases', 'fases.tareas'],
-        });
-        if (!proyecto) {
-            throw new common_1.NotFoundException(`Proyecto con ID ${id} no encontrado`);
+        try {
+            const proyecto = await this.repo.findOne({
+                where: { id_proyecto: id },
+                relations: ['organizacion', 'estado', 'fases', 'fases.tareas', 'fases.tareas.asignaciones', 'fases.tareas.asignaciones.rol', 'fases.tareas.asignaciones.voluntario', 'fases.tareas.asignaciones.voluntario.usuario', 'beneficio'],
+            });
+            if (!proyecto) {
+                throw new common_1.NotFoundException(`Proyecto con ID ${id} no encontrado`);
+            }
+            return proyecto;
         }
-        return proyecto;
+        catch (error) {
+            console.error('Error loading proyecto with relations:', error);
+            const proyecto = await this.repo.findOne({
+                where: { id_proyecto: id },
+                relations: ['organizacion', 'estado', 'fases', 'beneficio'],
+            });
+            if (!proyecto) {
+                throw new common_1.NotFoundException(`Proyecto con ID ${id} no encontrado`);
+            }
+            if (proyecto.fases && proyecto.fases.length > 0) {
+                for (const fase of proyecto.fases) {
+                    try {
+                        const tareas = await this.tareaRepo.find({
+                            where: { id_fase: fase.id_fase },
+                            relations: ['asignaciones', 'asignaciones.rol', 'asignaciones.voluntario', 'asignaciones.voluntario.usuario'],
+                        });
+                        fase.tareas = tareas || [];
+                    }
+                    catch (tareaError) {
+                        console.error(`Error loading tasks for phase ${fase.id_fase}:`, tareaError);
+                        fase.tareas = [];
+                    }
+                }
+            }
+            return proyecto;
+        }
+    }
+    async findPublicProjects() {
+        try {
+            const proyectos = await this.repo.find({
+                where: [
+                    {
+                        es_publico: true,
+                        id_estado: 1
+                    },
+                    {
+                        es_publico: true,
+                        id_estado: 7
+                    },
+                    {
+                        es_publico: true,
+                        id_estado: 5
+                    },
+                    {
+                        es_publico: true,
+                        id_estado: 6
+                    }
+                ],
+                relations: ['organizacion', 'estado', 'beneficio'],
+                order: { creado_en: 'DESC' }
+            });
+            return proyectos || [];
+        }
+        catch (error) {
+            console.error('Error loading public projects:', error);
+            try {
+                const proyectos = await this.repo.find({
+                    where: {
+                        es_publico: true
+                    },
+                    relations: ['organizacion', 'estado', 'beneficio'],
+                    order: { creado_en: 'DESC' }
+                });
+                return proyectos.filter(p => {
+                    var _a, _b;
+                    const estadoNombre = ((_b = (_a = p.estado) === null || _a === void 0 ? void 0 : _a.nombre) === null || _b === void 0 ? void 0 : _b.toLowerCase()) || '';
+                    const estadoId = p.id_estado;
+                    return estadoId !== 2 &&
+                        estadoId !== 3 &&
+                        estadoId !== 4 &&
+                        estadoId !== 9 &&
+                        !estadoNombre.includes('cerrado');
+                }) || [];
+            }
+            catch (fallbackError) {
+                console.error('Error en fallback de findPublicProjects:', fallbackError);
+                return [];
+            }
+        }
     }
     async update(id, dto, user) {
         const proyecto = await this.findOne(id);
@@ -87,7 +261,32 @@ let ProyectoService = class ProyectoService {
         if (user.tipo_usuario !== 'admin' && proyecto.id_organizacion !== organizacion.id_organizacion) {
             throw new common_1.ForbiddenException('No tienes permiso para actualizar este proyecto.');
         }
-        this.repo.merge(proyecto, dto);
+        if (dto.nombre !== undefined)
+            proyecto.nombre = dto.nombre.trim();
+        if (dto.descripcion !== undefined)
+            proyecto.descripcion = dto.descripcion.trim();
+        if (dto.objetivo !== undefined)
+            proyecto.objetivo = dto.objetivo.trim();
+        if (dto.ubicacion !== undefined)
+            proyecto.ubicacion = dto.ubicacion.trim();
+        if (dto.fecha_inicio !== undefined)
+            proyecto.fecha_inicio = typeof dto.fecha_inicio === 'string' ? new Date(dto.fecha_inicio) : dto.fecha_inicio;
+        if (dto.fecha_fin !== undefined)
+            proyecto.fecha_fin = typeof dto.fecha_fin === 'string' ? new Date(dto.fecha_fin) : dto.fecha_fin;
+        if (dto.imagen_principal !== undefined)
+            proyecto.imagen_principal = dto.imagen_principal;
+        if (dto.documento !== undefined)
+            proyecto.documento = dto.documento;
+        if (dto.presupuesto_total !== undefined)
+            proyecto.presupuesto_total = dto.presupuesto_total;
+        if (dto.categoria !== undefined)
+            proyecto.categoria = dto.categoria;
+        if (dto.es_publico !== undefined)
+            proyecto.es_publico = dto.es_publico;
+        if (dto.requisitos !== undefined)
+            proyecto.requisitos = dto.requisitos;
+        if (dto.id_estado !== undefined)
+            proyecto.id_estado = dto.id_estado;
         return this.repo.save(proyecto);
     }
     async remove(id, user) {
@@ -104,8 +303,14 @@ let ProyectoService = class ProyectoService {
         if (user.tipo_usuario !== 'admin' && proyecto.id_organizacion !== organizacion.id_organizacion) {
             throw new common_1.ForbiddenException('No tienes permiso para agregar fases a este proyecto.');
         }
-        const fase = this.faseRepo.create(Object.assign(Object.assign({}, dto), { id_proyecto: proyectoId }));
+        const fase = this.faseRepo.create({
+            nombre: dto.nombre.trim(),
+            descripcion: dto.descripcion.trim(),
+            orden: dto.orden,
+            id_proyecto: proyectoId,
+        });
         const savedFase = await this.faseRepo.save(fase);
+        console.log(`Fase creada exitosamente:`, savedFase);
         return this.findOne(proyectoId);
     }
     async updateFase(proyectoId, faseId, dto, user) {
@@ -188,6 +393,100 @@ let ProyectoService = class ProyectoService {
         await this.tareaRepo.remove(tarea);
         return this.findOne(proyectoId);
     }
+    async findProjectsByVoluntario(id_usuario) {
+        try {
+            const voluntario = await this.voluntarioRepo.findOne({
+                where: { id_usuario },
+                relations: ['usuario']
+            });
+            if (!voluntario) {
+                console.log(`Voluntario no encontrado para usuario ${id_usuario}`);
+                return [];
+            }
+            console.log(`Buscando proyectos para voluntario ${voluntario.id_voluntario}`);
+            let asignaciones;
+            try {
+                asignaciones = await this.asignacionRepo.find({
+                    where: { id_voluntario: voluntario.id_voluntario },
+                    relations: ['tarea', 'tarea.fase', 'tarea.fase.proyecto', 'rol']
+                });
+            }
+            catch (relationError) {
+                console.error('Error cargando asignaciones con relaciones:', relationError);
+                asignaciones = await this.asignacionRepo.find({
+                    where: { id_voluntario: voluntario.id_voluntario }
+                });
+                for (const asignacion of asignaciones) {
+                    try {
+                        const tarea = await this.tareaRepo.findOne({
+                            where: { id_tarea: asignacion.id_tarea },
+                            relations: ['fase', 'fase.proyecto']
+                        });
+                        asignacion.tarea = tarea;
+                        if (asignacion.id_rol) {
+                            const rol = await this.rolRepo.findOne({
+                                where: { id_rol: asignacion.id_rol }
+                            });
+                            asignacion.rol = rol;
+                        }
+                    }
+                    catch (loadError) {
+                        console.error(`Error cargando relaciones para asignación ${asignacion.id_asignacion}:`, loadError);
+                    }
+                }
+            }
+            console.log(`Encontradas ${asignaciones.length} asignaciones`);
+            if (asignaciones.length === 0) {
+                return [];
+            }
+            const proyectosMap = new Map();
+            asignaciones.forEach(asignacion => {
+                var _a, _b;
+                const proyecto = (_b = (_a = asignacion.tarea) === null || _a === void 0 ? void 0 : _a.fase) === null || _b === void 0 ? void 0 : _b.proyecto;
+                if (!proyecto)
+                    return;
+                const proyectoId = proyecto.id_proyecto;
+                if (!proyectosMap.has(proyectoId)) {
+                    proyectosMap.set(proyectoId, {
+                        proyecto: proyecto,
+                        roles: new Set(),
+                        rolesArray: []
+                    });
+                }
+                if (asignacion.rol) {
+                    proyectosMap.get(proyectoId).roles.add(asignacion.rol.id_rol);
+                }
+            });
+            const proyectosIds = Array.from(proyectosMap.keys());
+            const proyectos = await this.repo.find({
+                where: proyectosIds.map(id => ({ id_proyecto: id })),
+                relations: ['organizacion', 'estado', 'beneficio'],
+                order: { creado_en: 'DESC' }
+            });
+            return proyectos.map(proyecto => {
+                const proyectoData = proyectosMap.get(proyecto.id_proyecto);
+                const rolesIds = Array.from(proyectoData.roles);
+                const rolesAsignados = asignaciones
+                    .filter(a => {
+                    var _a, _b, _c;
+                    const proyId = (_c = (_b = (_a = a.tarea) === null || _a === void 0 ? void 0 : _a.fase) === null || _b === void 0 ? void 0 : _b.proyecto) === null || _c === void 0 ? void 0 : _c.id_proyecto;
+                    return proyId === proyecto.id_proyecto && a.rol;
+                })
+                    .map(a => ({
+                    id_rol: a.rol.id_rol,
+                    nombre: a.rol.nombre,
+                    descripcion: a.rol.descripcion,
+                    tipo_rol: a.rol.tipo_rol
+                }))
+                    .filter((rol, index, self) => index === self.findIndex(r => r.id_rol === rol.id_rol));
+                return Object.assign(Object.assign({}, proyecto), { rolesAsignados: rolesAsignados, roles: rolesAsignados.map(r => r.nombre).join(', ') });
+            });
+        }
+        catch (error) {
+            console.error('Error en findProjectsByVoluntario:', error);
+            return [];
+        }
+    }
 };
 exports.ProyectoService = ProyectoService;
 exports.ProyectoService = ProyectoService = __decorate([
@@ -196,7 +495,15 @@ exports.ProyectoService = ProyectoService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(organizacion_entity_1.Organizacion)),
     __param(2, (0, typeorm_1.InjectRepository)(fase_entity_1.Fase)),
     __param(3, (0, typeorm_1.InjectRepository)(tarea_entity_1.Tarea)),
+    __param(4, (0, typeorm_1.InjectRepository)(proyecto_beneficio_entity_1.ProyectoBeneficio)),
+    __param(5, (0, typeorm_1.InjectRepository)(asignacion_entity_1.Asignacion)),
+    __param(6, (0, typeorm_1.InjectRepository)(voluntario_entity_1.Voluntario)),
+    __param(7, (0, typeorm_1.InjectRepository)(rol_entity_1.Rol)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

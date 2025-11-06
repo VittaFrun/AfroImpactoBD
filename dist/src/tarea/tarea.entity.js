@@ -15,6 +15,7 @@ const estado_entity_1 = require("../estado/estado.entity");
 const fase_entity_1 = require("../fase/fase.entity");
 const asignacion_entity_1 = require("../asignacion/asignacion.entity");
 const movimiento_entity_1 = require("../movimiento/movimiento.entity");
+const horas_voluntariadas_entity_1 = require("../horas-voluntariadas/horas-voluntariadas.entity");
 let Tarea = class Tarea {
 };
 exports.Tarea = Tarea;
@@ -76,6 +77,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => movimiento_entity_1.Movimiento, (movimiento) => movimiento.tarea),
     __metadata("design:type", Array)
 ], Tarea.prototype, "movimientos", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => horas_voluntariadas_entity_1.HorasVoluntariadas, (horasVoluntariadas) => horasVoluntariadas.tarea),
+    __metadata("design:type", Array)
+], Tarea.prototype, "horasVoluntariadas", void 0);
 exports.Tarea = Tarea = __decorate([
     (0, typeorm_1.Entity)({ name: 'tarea' })
 ], Tarea);

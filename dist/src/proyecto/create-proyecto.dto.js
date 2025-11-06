@@ -70,8 +70,24 @@ __decorate([
 ], CreateProyectoDto.prototype, "presupuesto_total", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)({}, { message: 'El ID del estado debe ser un número válido' }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_transformer_1.Transform)(({ value }) => parseInt(value)),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => value ? parseInt(value) : 1),
     __metadata("design:type", Number)
 ], CreateProyectoDto.prototype, "id_estado", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => value === true || value === 'true' || value === 1),
+    __metadata("design:type", Boolean)
+], CreateProyectoDto.prototype, "es_publico", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(0, 50, { message: 'La categoría no puede exceder 50 caracteres' }),
+    __metadata("design:type", String)
+], CreateProyectoDto.prototype, "categoria", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateProyectoDto.prototype, "requisitos", void 0);
 //# sourceMappingURL=create-proyecto.dto.js.map

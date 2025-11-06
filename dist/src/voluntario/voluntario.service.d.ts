@@ -3,10 +3,14 @@ import { Voluntario } from './voluntario.entity';
 import { CreateVoluntarioDto } from './create-voluntario.dto';
 import { UpdateVoluntarioDto } from './update-voluntario.dto';
 import { Usuario } from '../users/user.entity';
+import { Estado } from '../estado/estado.entity';
+import { Jornada } from '../jornada/jornada.entity';
 export declare class VoluntarioService {
     private readonly repo;
     private readonly usuarioRepo;
-    constructor(repo: Repository<Voluntario>, usuarioRepo: Repository<Usuario>);
+    private readonly estadoRepo;
+    private readonly jornadaRepo;
+    constructor(repo: Repository<Voluntario>, usuarioRepo: Repository<Usuario>, estadoRepo: Repository<Estado>, jornadaRepo: Repository<Jornada>);
     create(dto: CreateVoluntarioDto): Promise<CreateVoluntarioDto & Voluntario>;
     createBasic(id_usuario: number): Promise<Voluntario>;
     findAll(): Promise<Voluntario[]>;

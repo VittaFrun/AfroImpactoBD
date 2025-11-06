@@ -60,6 +60,13 @@ let UsersService = class UsersService {
         user.rol = rol;
         return this.usersRepository.save(user);
     }
+    async remove(id) {
+        const user = await this.usersRepository.findOne({ where: { id_usuario: id } });
+        if (!user) {
+            throw new common_1.NotFoundException(`Usuario con ID "${id}" no encontrado`);
+        }
+        await this.usersRepository.remove(user);
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

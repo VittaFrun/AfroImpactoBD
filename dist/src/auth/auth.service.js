@@ -70,11 +70,23 @@ let AuthService = class AuthService {
             tipo_usuario: registerDto.tipo_usuario,
             id_rol: registerDto.id_rol,
         });
-        if (registerDto.tipo_usuario === 'voluntario') {
-            await this.voluntarioService.createBasic(newUser.id_usuario);
+        try {
+            if (registerDto.tipo_usuario === 'voluntario') {
+                await this.voluntarioService.createBasic(newUser.id_usuario);
+            }
+            else if (registerDto.tipo_usuario === 'organizacion') {
+                await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
+            }
         }
-        else if (registerDto.tipo_usuario === 'organizacion') {
-            await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
+        catch (error) {
+            console.error(`Error al crear perfil de ${registerDto.tipo_usuario}:`, error);
+            try {
+                await this.usersService.remove(newUser.id_usuario);
+            }
+            catch (deleteError) {
+                console.error('Error al eliminar usuario después de fallo en creación de perfil:', deleteError);
+            }
+            throw new common_1.BadRequestException(`Error al crear el perfil de ${registerDto.tipo_usuario}. Por favor, intenta nuevamente.`);
         }
         const { password } = newUser, result = __rest(newUser, ["password"]);
         return result;

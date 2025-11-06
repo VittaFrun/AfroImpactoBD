@@ -21,8 +21,17 @@ let EstadoService = class EstadoService {
     constructor(repo) {
         this.repo = repo;
     }
-    create(dto) {
-        return this.repo.save(dto);
+    async create(dto) {
+        const existingEstado = await this.repo.findOne({
+            where: { nombre: dto.nombre.trim() }
+        });
+        if (existingEstado) {
+            throw new Error(`Ya existe un estado con el nombre "${dto.nombre.trim()}"`);
+        }
+        const estado = this.repo.create({
+            nombre: dto.nombre.trim()
+        });
+        return this.repo.save(estado);
     }
     findAll() {
         return this.repo.find();

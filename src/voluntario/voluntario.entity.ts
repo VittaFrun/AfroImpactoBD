@@ -6,6 +6,10 @@ import { VoluntarioHabilidad } from '../voluntario-habilidad/voluntario-habilida
 import { Asignacion } from '../asignacion/asignacion.entity';
 import { Disponibilidad } from '../disponibilidad/disponibilidad.entity';
 import { Evaluacion } from '../evaluacion/evaluacion.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
+import { VoluntarioLogro } from '../voluntario-logro/voluntario-logro.entity';
+import { Certificado } from '../certificado/certificado.entity';
+import { SolicitudInscripcion } from '../solicitud-inscripcion/solicitud-inscripcion.entity';
 
 @Entity({ name: 'voluntario' })
 export class Voluntario {
@@ -53,4 +57,16 @@ export class Voluntario {
 
   @OneToMany(() => Evaluacion, (evaluacion) => evaluacion.voluntario)
   evaluaciones: Evaluacion[];
+
+  @OneToMany(() => HorasVoluntariadas, (horasVoluntariadas) => horasVoluntariadas.voluntario)
+  horasVoluntariadas: HorasVoluntariadas[];
+
+  @OneToMany(() => VoluntarioLogro, (voluntarioLogro) => voluntarioLogro.voluntario)
+  voluntarioLogros: VoluntarioLogro[];
+
+  @OneToMany(() => Certificado, (certificado) => certificado.voluntario)
+  certificados: Certificado[];
+
+  @OneToMany(() => SolicitudInscripcion, (solicitud) => solicitud.voluntario)
+  solicitudes: SolicitudInscripcion[];
 }

@@ -14,6 +14,9 @@ const typeorm_1 = require("typeorm");
 const rol_entity_1 = require("../rol/rol.entity");
 const voluntario_entity_1 = require("../voluntario/voluntario.entity");
 const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const preferencia_usuario_entity_1 = require("../preferencia-usuario/preferencia-usuario.entity");
+const configuracion_seguridad_entity_1 = require("../configuracion-seguridad/configuracion-seguridad.entity");
+const integracion_entity_1 = require("../integracion/integracion.entity");
 let Usuario = class Usuario {
 };
 exports.Usuario = Usuario;
@@ -33,6 +36,10 @@ __decorate([
     (0, typeorm_1.Column)({ length: 255, name: 'password' }),
     __metadata("design:type", String)
 ], Usuario.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 20, nullable: true }),
+    __metadata("design:type", String)
+], Usuario.prototype, "telefono", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_rol', nullable: true }),
     __metadata("design:type", Number)
@@ -62,6 +69,18 @@ __decorate([
     (0, typeorm_1.OneToOne)(() => organizacion_entity_1.Organizacion, (organizacion) => organizacion.usuario),
     __metadata("design:type", organizacion_entity_1.Organizacion)
 ], Usuario.prototype, "organizacion", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => preferencia_usuario_entity_1.PreferenciaUsuario, (preferenciaUsuario) => preferenciaUsuario.usuario),
+    __metadata("design:type", Array)
+], Usuario.prototype, "preferencias", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => configuracion_seguridad_entity_1.ConfiguracionSeguridad, (configuracionSeguridad) => configuracionSeguridad.usuario),
+    __metadata("design:type", Array)
+], Usuario.prototype, "configuracionesSeguridad", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => integracion_entity_1.Integracion, (integracion) => integracion.usuario),
+    __metadata("design:type", Array)
+], Usuario.prototype, "integraciones", void 0);
 exports.Usuario = Usuario = __decorate([
     (0, typeorm_1.Entity)({ name: 'usuario' })
 ], Usuario);

@@ -5,6 +5,10 @@ import { VoluntarioHabilidad } from '../voluntario-habilidad/voluntario-habilida
 import { Asignacion } from '../asignacion/asignacion.entity';
 import { Disponibilidad } from '../disponibilidad/disponibilidad.entity';
 import { Evaluacion } from '../evaluacion/evaluacion.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
+import { VoluntarioLogro } from '../voluntario-logro/voluntario-logro.entity';
+import { Certificado } from '../certificado/certificado.entity';
+import { SolicitudInscripcion } from '../solicitud-inscripcion/solicitud-inscripcion.entity';
 export declare class Voluntario {
     id_voluntario: number;
     id_usuario: number;
@@ -20,4 +24,8 @@ export declare class Voluntario {
     asignaciones: Asignacion[];
     disponibilidades: Disponibilidad[];
     evaluaciones: Evaluacion[];
+    horasVoluntariadas: HorasVoluntariadas[];
+    voluntarioLogros: VoluntarioLogro[];
+    certificados: Certificado[];
+    solicitudes: SolicitudInscripcion[];
 }

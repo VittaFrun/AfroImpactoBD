@@ -38,6 +38,10 @@ __decorate([
     (0, typeorm_1.Column)({ length: 50, name: 'tipo_referencia' }),
     __metadata("design:type", String)
 ], Archivo.prototype, "tipo_referencia", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
+    __metadata("design:type", Date)
+], Archivo.prototype, "creado_en", void 0);
 exports.Archivo = Archivo = __decorate([
     (0, typeorm_1.Entity)({ name: 'archivo' })
 ], Archivo);

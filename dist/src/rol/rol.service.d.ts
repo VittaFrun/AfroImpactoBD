@@ -2,12 +2,33 @@ import { Repository } from 'typeorm';
 import { Rol } from './rol.entity';
 import { CreateRolDto } from './create-rol.dto';
 import { UpdateRolDto } from './update-rol.dto';
+import { Organizacion } from '../organizacion/organizacion.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
+import { Usuario } from '../users/user.entity';
+import { Asignacion } from '../asignacion/asignacion.entity';
 export declare class RolService {
     private readonly repo;
-    constructor(repo: Repository<Rol>);
-    create(dto: CreateRolDto): Promise<CreateRolDto & Rol>;
-    findAll(): Promise<Rol[]>;
+    private readonly orgRepo;
+    private readonly proyectoRepo;
+    private readonly asignacionRepo;
+    constructor(repo: Repository<Rol>, orgRepo: Repository<Organizacion>, proyectoRepo: Repository<Proyecto>, asignacionRepo: Repository<Asignacion>);
+    create(dto: CreateRolDto, user: Usuario): Promise<Rol>;
+    findAll(filters?: {
+        tipo_rol?: string;
+        id_organizacion?: number;
+        id_proyecto?: number;
+    }): Promise<Rol[]>;
+    findSystemRoles(): Promise<Rol[]>;
+    findByOrganization(id_organizacion: number): Promise<Rol[]>;
+    findByProject(id_proyecto: number): Promise<Rol[]>;
     findOne(id: number): Promise<Rol>;
-    update(id: number, dto: UpdateRolDto): Promise<import("typeorm").UpdateResult>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    update(id: number, dto: UpdateRolDto, user: Usuario): Promise<Rol>;
+    remove(id: number, user: Usuario): Promise<{
+        message: string;
+    }>;
+    private validateTipoRol;
+    private validatePermissions;
+    private validateUpdatePermissions;
+    private validateDeletePermissions;
+    private findExistingRol;
 }

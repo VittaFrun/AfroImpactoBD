@@ -3,6 +3,7 @@ import { Estado } from '../estado/estado.entity';
 import { Fase } from '../fase/fase.entity';
 import { Asignacion } from '../asignacion/asignacion.entity';
 import { Movimiento } from '../movimiento/movimiento.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
 
 @Entity({ name: 'tarea' })
 export class Tarea {
@@ -49,4 +50,7 @@ export class Tarea {
 
   @OneToMany(() => Movimiento, (movimiento) => movimiento.tarea)
   movimientos: Movimiento[];
+
+  @OneToMany(() => HorasVoluntariadas, (horasVoluntariadas) => horasVoluntariadas.tarea)
+  horasVoluntariadas: HorasVoluntariadas[];
 }

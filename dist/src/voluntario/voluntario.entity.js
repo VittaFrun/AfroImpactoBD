@@ -18,6 +18,10 @@ const voluntario_habilidad_entity_1 = require("../voluntario-habilidad/voluntari
 const asignacion_entity_1 = require("../asignacion/asignacion.entity");
 const disponibilidad_entity_1 = require("../disponibilidad/disponibilidad.entity");
 const evaluacion_entity_1 = require("../evaluacion/evaluacion.entity");
+const horas_voluntariadas_entity_1 = require("../horas-voluntariadas/horas-voluntariadas.entity");
+const voluntario_logro_entity_1 = require("../voluntario-logro/voluntario-logro.entity");
+const certificado_entity_1 = require("../certificado/certificado.entity");
+const solicitud_inscripcion_entity_1 = require("../solicitud-inscripcion/solicitud-inscripcion.entity");
 let Voluntario = class Voluntario {
 };
 exports.Voluntario = Voluntario;
@@ -80,6 +84,22 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => evaluacion_entity_1.Evaluacion, (evaluacion) => evaluacion.voluntario),
     __metadata("design:type", Array)
 ], Voluntario.prototype, "evaluaciones", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => horas_voluntariadas_entity_1.HorasVoluntariadas, (horasVoluntariadas) => horasVoluntariadas.voluntario),
+    __metadata("design:type", Array)
+], Voluntario.prototype, "horasVoluntariadas", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => voluntario_logro_entity_1.VoluntarioLogro, (voluntarioLogro) => voluntarioLogro.voluntario),
+    __metadata("design:type", Array)
+], Voluntario.prototype, "voluntarioLogros", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => certificado_entity_1.Certificado, (certificado) => certificado.voluntario),
+    __metadata("design:type", Array)
+], Voluntario.prototype, "certificados", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => solicitud_inscripcion_entity_1.SolicitudInscripcion, (solicitud) => solicitud.voluntario),
+    __metadata("design:type", Array)
+], Voluntario.prototype, "solicitudes", void 0);
 exports.Voluntario = Voluntario = __decorate([
     (0, typeorm_1.Entity)({ name: 'voluntario' })
 ], Voluntario);

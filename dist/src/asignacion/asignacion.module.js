@@ -17,12 +17,13 @@ const fase_entity_1 = require("../fase/fase.entity");
 const proyecto_entity_1 = require("../proyecto/proyecto.entity");
 const organizacion_entity_1 = require("../organizacion/organizacion.entity");
 const voluntario_entity_1 = require("../voluntario/voluntario.entity");
+const rol_entity_1 = require("../rol/rol.entity");
 let AsignacionModule = class AsignacionModule {
 };
 exports.AsignacionModule = AsignacionModule;
 exports.AsignacionModule = AsignacionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([asignacion_entity_1.Asignacion, tarea_entity_1.Tarea, fase_entity_1.Fase, proyecto_entity_1.Proyecto, organizacion_entity_1.Organizacion, voluntario_entity_1.Voluntario])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([asignacion_entity_1.Asignacion, tarea_entity_1.Tarea, fase_entity_1.Fase, proyecto_entity_1.Proyecto, organizacion_entity_1.Organizacion, voluntario_entity_1.Voluntario, rol_entity_1.Rol])],
         controllers: [asignacion_controller_1.AsignacionController],
         providers: [asignacion_service_1.AsignacionService],
     })

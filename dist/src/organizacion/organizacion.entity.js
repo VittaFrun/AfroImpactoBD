@@ -14,6 +14,8 @@ const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../users/user.entity");
 const donacion_entity_1 = require("../donacion/donacion.entity");
 const proyecto_entity_1 = require("../proyecto/proyecto.entity");
+const formulario_inscripcion_entity_1 = require("../formulario-inscripcion/formulario-inscripcion.entity");
+const rol_entity_1 = require("../rol/rol.entity");
 let Organizacion = class Organizacion {
 };
 exports.Organizacion = Organizacion;
@@ -35,6 +37,10 @@ __decorate([
     __metadata("design:type", String)
 ], Organizacion.prototype, "nombre", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ length: 50, name: 'nombre_corto', nullable: true }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "nombre_corto", void 0);
+__decorate([
     (0, typeorm_1.Column)({ length: 50 }),
     __metadata("design:type", String)
 ], Organizacion.prototype, "tipo", void 0);
@@ -51,6 +57,10 @@ __decorate([
     __metadata("design:type", String)
 ], Organizacion.prototype, "ciudad", void 0);
 __decorate([
+    (0, typeorm_1.Column)('text', { nullable: true }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "descripcion", void 0);
+__decorate([
     (0, typeorm_1.Column)('text', { name: 'areas_enfoque' }),
     __metadata("design:type", String)
 ], Organizacion.prototype, "areas_enfoque", void 0);
@@ -58,6 +68,22 @@ __decorate([
     (0, typeorm_1.Column)('text', { name: 'mision_vision' }),
     __metadata("design:type", String)
 ], Organizacion.prototype, "mision_vision", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 255, nullable: true }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "logo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 7, name: 'color_primario', nullable: true }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "color_primario", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 7, name: 'color_secundario', nullable: true }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "color_secundario", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 20, default: 'claro' }),
+    __metadata("design:type", String)
+], Organizacion.prototype, "tema", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
     __metadata("design:type", Date)
@@ -74,6 +100,14 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => proyecto_entity_1.Proyecto, (proyecto) => proyecto.organizacion),
     __metadata("design:type", Array)
 ], Organizacion.prototype, "proyectos", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => formulario_inscripcion_entity_1.FormularioInscripcion, (formulario) => formulario.organizacion),
+    __metadata("design:type", Array)
+], Organizacion.prototype, "formularios", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => rol_entity_1.Rol, (rol) => rol.organizacion),
+    __metadata("design:type", Array)
+], Organizacion.prototype, "roles", void 0);
 exports.Organizacion = Organizacion = __decorate([
     (0, typeorm_1.Entity)({ name: 'organizacion' })
 ], Organizacion);

@@ -24,7 +24,7 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(10, 1000, { message: 'La descripción debe tener entre 10 y 1000 caracteres' }),
+    (0, class_validator_1.Length)(1, 1000, { message: 'La descripción debe tener entre 1 y 1000 caracteres' }),
     __metadata("design:type", String)
 ], CreateFaseDto.prototype, "descripcion", void 0);
 __decorate([
@@ -36,8 +36,8 @@ __decorate([
 ], CreateFaseDto.prototype, "orden", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)({}, { message: 'El ID del proyecto debe ser un número válido' }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_transformer_1.Transform)(({ value }) => parseInt(value)),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => value ? parseInt(value) : undefined),
     __metadata("design:type", Number)
 ], CreateFaseDto.prototype, "id_proyecto", void 0);
 //# sourceMappingURL=create-fase.dto.js.map

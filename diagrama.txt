@@ -3,6 +3,7 @@ Table Usuario {
   nombre varchar(100)
   email varchar(100) [unique]
   password varchar(255)
+  telefono varchar(20) [nullable] // Teléfono de contacto
   id_rol int
   tipo_usuario varchar(50) // Ej: 'voluntario', 'organizacion', 'admin'
   creado_en datetime
@@ -13,6 +14,13 @@ Table Rol {
   id_rol int [pk, increment]
   nombre varchar(100)
   descripcion varchar(255)
+  tipo_rol enum('sistema', 'organizacion', 'proyecto') [not null] // Tipo de rol: sistema (global), organizacion (reutilizable por org), proyecto (específico)
+  id_organizacion int [nullable] // FK a Organizacion (solo para tipo 'organizacion')
+  id_proyecto int [nullable] // FK a Proyecto (solo para tipo 'proyecto')
+  activo bool [default: true] // Si el rol está activo y disponible
+  creado_por int [nullable] // FK a Usuario (para auditoría)
+  creado_en datetime
+  actualizado_en datetime
 }
 
 Table Permiso {
@@ -72,12 +80,18 @@ Table Organizacion {
   id_organizacion int [pk, increment]
   id_usuario int
   nombre varchar(100)
+  nombre_corto varchar(50) [nullable] // Nombre corto o marca
   tipo varchar(50)
   sitio_web varchar(255)
   pais varchar(100)
   ciudad varchar(100)
+  descripcion text [nullable] // Descripción breve de la organización
   areas_enfoque text
   mision_vision text
+  logo varchar(255) [nullable] // Ruta o URL del logo
+  color_primario varchar(7) [nullable] // Color primario en formato hex (#RRGGBB)
+  color_secundario varchar(7) [nullable] // Color secundario en formato hex (#RRGGBB)
+  tema varchar(20) [default: 'claro'] // 'claro' o 'oscuro'
   creado_en datetime
   actualizado_en datetime
 }
@@ -112,11 +126,14 @@ Table Proyecto {
   descripcion text
   objetivo text
   ubicacion varchar(100)
+  categoria varchar(50) [nullable] // Categoría del proyecto (Educación, Salud, etc.)
   fecha_inicio date
   fecha_fin date
   imagen_principal varchar(255) // Ruta o URL de la imagen destacada
   documento varchar(255) [nullable]
   presupuesto_total decimal(12,2) [default: 0] // Presupuesto total del proyecto
+  es_publico bool [default: true] // Si el proyecto es visible públicamente
+  requisitos text [nullable] // Lista libre de requisitos para participar en el proyecto (JSON o texto)
   id_estado int // FK a Estado
   id_organizacion int // FK a Organizacion
   creado_en datetime
@@ -150,7 +167,7 @@ Table Asignacion {
   id_asignacion int [pk, increment]
   id_tarea int
   id_voluntario int
-  rol_asignado varchar(100)
+  id_rol int // FK a Rol (cambia de varchar a FK para integridad referencial)
 }
 
 Table Movimiento {
@@ -168,10 +185,16 @@ Table Movimiento {
 
 Table Reporte {
   id_reporte int [pk, increment]
-  tipo varchar(50)
+  tipo varchar(50) // 'impacto', 'financiero', 'operativo', etc.
+  formato varchar(20) [default: 'PDF'] // 'PDF', 'Excel', 'CSV', 'HTML'
   fecha date
   contenido text
+  estado varchar(20) [default: 'pendiente'] // 'pendiente', 'generando', 'listo', 'error'
+  incluir_graficos bool [default: true] // Si incluye gráficos en el reporte
+  descargas int [default: 0] // Contador de descargas
   id_proyecto int
+  creado_en datetime
+  actualizado_en datetime
 }
 
 Table Evaluacion {
@@ -190,6 +213,152 @@ Table Archivo {
   tipo varchar(50) // 'imagen', 'documento', 'comprobante', etc.
   id_referencia int
   tipo_referencia varchar(50) // 'proyecto', 'tarea', 'reporte', etc.
+  creado_en datetime
+}
+
+Table PreferenciaUsuario {
+  id_preferencia int [pk, increment]
+  id_usuario int
+  notificaciones_email bool [default: true] // Recibir notificaciones por email
+  resumen_semanal bool [default: true] // Recibir resumen semanal
+  recordatorios bool [default: true] // Recordatorios de tareas
+  notificaciones_push bool [default: true] // Notificaciones push
+  modo_oscuro bool [default: false] // Modo oscuro activado
+  idioma varchar(10) [default: 'es'] // Código de idioma (es, en, etc.)
+  zona_horaria varchar(50) [default: 'America/Bogota'] // Zona horaria
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table ConfiguracionSeguridad {
+  id_config_seguridad int [pk, increment]
+  id_usuario int
+  two_factor_enabled bool [default: false] // Autenticación de dos factores
+  two_factor_secret varchar(255) [nullable] // Secret para 2FA
+  sso_enabled bool [default: false] // Single Sign-On habilitado
+  sso_provider varchar(50) [nullable] // Proveedor SSO (google, microsoft, etc.)
+  session_timeout int [default: 3600] // Timeout de sesión en segundos
+  ip_whitelist text [nullable] // Lista de IPs permitidas (JSON)
+  audit_log_enabled bool [default: false] // Registrar acciones en log de auditoría
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table Integracion {
+  id_integracion int [pk, increment]
+  id_usuario int
+  tipo varchar(50) // 'google', 'microsoft', 'slack', 'mailchimp', etc.
+  nombre varchar(100) // Nombre descriptivo
+  habilitada bool [default: false] // Si la integración está activa
+  token_acceso text [nullable] // Token de acceso (encriptado)
+  token_refresh text [nullable] // Token de refresh (encriptado)
+  configuracion text [nullable] // Configuración adicional (JSON)
+  expiracion_token datetime [nullable] // Fecha de expiración del token
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table HorasVoluntariadas {
+  id_horas int [pk, increment]
+  id_voluntario int
+  id_proyecto int
+  id_tarea int [nullable] // Opcional: horas asociadas a una tarea específica
+  fecha date
+  horas_trabajadas decimal(4,2) // Horas trabajadas (ej: 3.5)
+  descripcion text [nullable] // Descripción de las actividades realizadas
+  verificada bool [default: false] // Si las horas fueron verificadas por la organización
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table Logro {
+  id_logro int [pk, increment]
+  nombre varchar(100)
+  descripcion text
+  icono varchar(50) [nullable] // Nombre del icono (mdi-*)
+  puntos int [default: 0] // Puntos que otorga el logro
+  tipo varchar(50) // 'proyecto', 'horas', 'tareas', 'especial', etc.
+  condicion text [nullable] // Condición para obtener el logro (JSON o descripción)
+  creado_en datetime
+}
+
+Table VoluntarioLogro {
+  id_voluntario_logro int [pk, increment]
+  id_voluntario int
+  id_logro int
+  fecha_obtenido date
+  proyecto_relacionado int [nullable] // Proyecto relacionado si aplica
+  creado_en datetime
+}
+
+Table Certificado {
+  id_certificado int [pk, increment]
+  id_voluntario int
+  id_proyecto int [nullable] // Certificado por proyecto específico
+  nombre varchar(100)
+  descripcion text
+  tipo varchar(50) // 'participacion', 'completacion', 'excelencia', etc.
+  fecha_emision date
+  fecha_expiracion date [nullable] // Si el certificado expira
+  codigo_verificacion varchar(50) [unique] // Código único para verificación
+  archivo_pdf varchar(255) [nullable] // Ruta al archivo PDF del certificado
+  creado_en datetime
+}
+
+Table ProyectoBeneficio {
+  id_proyecto_beneficio int [pk, increment]
+  id_proyecto int // FK a Proyecto (OneToOne)
+  tipo_pago enum('volunteer', 'stipend', 'salary', 'honorarium') [default: 'volunteer'] // Tipo de remuneración
+  monto decimal(12,2) [default: 0] // Monto de remuneración
+  frecuencia enum('none', 'monthly', 'weekly', 'project') [default: 'none'] // Frecuencia de pago
+  descripcion_pago text [nullable] // Descripción detallada del pago
+  incluye_transporte bool [default: false] // Si incluye transporte
+  incluye_alimentacion bool [default: false] // Si incluye alimentación
+  incluye_materiales bool [default: false] // Si incluye materiales de trabajo
+  incluye_seguro bool [default: false] // Si incluye seguro de accidentes
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table SolicitudInscripcion {
+  id_solicitud int [pk, increment]
+  id_proyecto int // FK a Proyecto
+  id_voluntario int // FK a Voluntario
+  estado enum('pendiente', 'aprobada', 'rechazada') [default: 'pendiente'] // Estado de la solicitud
+  motivacion text [nullable] // Motivación del voluntario para participar
+  disponibilidad text [nullable] // Disponibilidad de tiempo del voluntario
+  experiencia_relacionada text [nullable] // Experiencia relacionada con el proyecto
+  notas_organizacion text [nullable] // Notas internas de la organización
+  fecha_solicitud date // Fecha en que se envió la solicitud
+  fecha_revision date [nullable] // Fecha en que se revisó la solicitud
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table FormularioInscripcion {
+  id_formulario int [pk, increment]
+  id_proyecto int [nullable] // FK a Proyecto (si es específico del proyecto)
+  id_organizacion int [nullable] // FK a Organizacion (si es general de la organización)
+  nombre_campo varchar(100) // Nombre técnico del campo
+  tipo_campo enum('text', 'textarea', 'number', 'date', 'select', 'file') // Tipo de campo del formulario
+  etiqueta varchar(255) // Etiqueta visible para el usuario
+  placeholder varchar(255) [nullable] // Texto placeholder del campo
+  requerido bool [default: false] // Si el campo es obligatorio
+  opciones text [nullable] // Opciones para campos tipo select (JSON)
+  orden int [default: 0] // Orden de aparición en el formulario
+  activo bool [default: true] // Si el campo está activo
+  creado_en datetime
+  actualizado_en datetime
+}
+
+Table DocumentoSolicitud {
+  id_documento int [pk, increment]
+  id_solicitud int // FK a SolicitudInscripcion
+  nombre_archivo varchar(255) // Nombre original del archivo
+  ruta_archivo varchar(500) // Ruta donde se almacena el archivo
+  tipo_documento varchar(100) // Tipo de documento (CV, certificado, etc.)
+  tamaño int // Tamaño del archivo en bytes
+  creado_en datetime
 }
 
 
@@ -220,6 +389,10 @@ Ref: Fase.id_fase > Tarea.id_fase
 
 Ref: Tarea.id_tarea < Asignacion.id_tarea
 Ref: Voluntario.id_voluntario < Asignacion.id_voluntario
+Ref: Rol.id_rol < Asignacion.id_rol
+Ref: Organizacion.id_organizacion < Rol.id_organizacion
+Ref: Proyecto.id_proyecto < Rol.id_proyecto
+Ref: Usuario.id_usuario < Rol.creado_por
 
 Ref: Proyecto.id_proyecto > Reporte.id_proyecto
 Ref: Proyecto.id_proyecto > Movimiento.id_proyecto
@@ -230,6 +403,33 @@ Ref: Proyecto.id_proyecto > Evaluacion.id_proyecto
 Ref: Voluntario.id_voluntario > Evaluacion.id_voluntario
 Ref: Organizacion.id_organizacion < Proyecto.id_organizacion
 
+Ref: Usuario.id_usuario > PreferenciaUsuario.id_usuario
+Ref: Usuario.id_usuario > ConfiguracionSeguridad.id_usuario
+Ref: Usuario.id_usuario > Integracion.id_usuario
+
+Ref: Voluntario.id_voluntario > HorasVoluntariadas.id_voluntario
+Ref: Proyecto.id_proyecto > HorasVoluntariadas.id_proyecto
+Ref: Tarea.id_tarea < HorasVoluntariadas.id_tarea
+
+Ref: Voluntario.id_voluntario > VoluntarioLogro.id_voluntario
+Ref: Logro.id_logro < VoluntarioLogro.id_logro
+Ref: Proyecto.id_proyecto < VoluntarioLogro.proyecto_relacionado
+
+Ref: Voluntario.id_voluntario > Certificado.id_voluntario
+Ref: Proyecto.id_proyecto < Certificado.id_proyecto
+
+Ref: Proyecto.id_proyecto - ProyectoBeneficio.id_proyecto [note: 'OneToOne: Un proyecto tiene un registro de beneficios']
+
+Ref: Proyecto.id_proyecto > SolicitudInscripcion.id_proyecto
+Ref: Voluntario.id_voluntario > SolicitudInscripcion.id_voluntario
+
+Ref: Proyecto.id_proyecto < FormularioInscripcion.id_proyecto
+Ref: Organizacion.id_organizacion < FormularioInscripcion.id_organizacion
+
+Ref: SolicitudInscripcion.id_solicitud > DocumentoSolicitud.id_solicitud
+
+Ref: Estado.id_estado < Reporte.estado [note: 'Relación lógica: estado se almacena como string']
+
 // Índices para optimización de consultas
 Indexes {
   (Proyecto.id_organizacion, Proyecto.id_estado) [name: 'idx_proyecto_org_estado']
@@ -237,4 +437,19 @@ Indexes {
   (Fase.id_proyecto, Fase.orden) [name: 'idx_fase_proyecto_orden']
   (Tarea.id_fase, Tarea.id_estado) [name: 'idx_tarea_fase_estado']
   (Asignacion.id_tarea, Asignacion.id_voluntario) [name: 'idx_asignacion_tarea_voluntario']
+  (Asignacion.id_rol, Asignacion.id_tarea) [name: 'idx_asignacion_rol_tarea']
+  (Rol.tipo_rol, Rol.id_organizacion, Rol.id_proyecto) [name: 'idx_rol_tipo_contexto']
+  (Rol.id_organizacion, Rol.activo) [name: 'idx_rol_organizacion_activo']
+  (Rol.id_proyecto, Rol.activo) [name: 'idx_rol_proyecto_activo']
+  (HorasVoluntariadas.id_voluntario, HorasVoluntariadas.fecha) [name: 'idx_horas_voluntario_fecha']
+  (HorasVoluntariadas.id_proyecto, HorasVoluntariadas.fecha) [name: 'idx_horas_proyecto_fecha']
+  (Reporte.id_proyecto, Reporte.estado) [name: 'idx_reporte_proyecto_estado']
+  (Certificado.id_voluntario, Certificado.fecha_emision) [name: 'idx_certificado_voluntario_fecha']
+  (VoluntarioLogro.id_voluntario, VoluntarioLogro.fecha_obtenido) [name: 'idx_logro_voluntario_fecha']
+  (Proyecto.es_publico, Proyecto.id_estado) [name: 'idx_proyecto_publico_estado']
+  (SolicitudInscripcion.id_proyecto, SolicitudInscripcion.estado) [name: 'idx_solicitud_proyecto_estado']
+  (SolicitudInscripcion.id_voluntario, SolicitudInscripcion.estado) [name: 'idx_solicitud_voluntario_estado']
+  (FormularioInscripcion.id_proyecto, FormularioInscripcion.activo) [name: 'idx_formulario_proyecto_activo']
+  (FormularioInscripcion.id_organizacion, FormularioInscripcion.activo) [name: 'idx_formulario_organizacion_activo']
+  (DocumentoSolicitud.id_solicitud) [name: 'idx_documento_solicitud']
 }

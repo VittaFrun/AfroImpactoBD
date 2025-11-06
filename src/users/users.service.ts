@@ -57,4 +57,12 @@ export class UsersService {
     user.rol = rol;
     return this.usersRepository.save(user);
   }
+
+  async remove(id: number): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { id_usuario: id } });
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID "${id}" no encontrado`);
+    }
+    await this.usersRepository.remove(user);
+  }
 }

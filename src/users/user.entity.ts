@@ -1,7 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Rol } from '../rol/rol.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
 import { Organizacion } from '../organizacion/organizacion.entity';
+import { PreferenciaUsuario } from '../preferencia-usuario/preferencia-usuario.entity';
+import { ConfiguracionSeguridad } from '../configuracion-seguridad/configuracion-seguridad.entity';
+import { Integracion } from '../integracion/integracion.entity';
 
 @Entity({ name: 'usuario' })
 export class Usuario {
@@ -16,6 +19,9 @@ export class Usuario {
 
   @Column({ length: 255, name: 'password' })
   password: string;
+
+  @Column({ length: 20, nullable: true })
+  telefono: string;
 
   @Column({ name: 'id_rol', nullable: true })
   id_rol: number | null;
@@ -38,4 +44,13 @@ export class Usuario {
 
   @OneToOne(() => Organizacion, (organizacion) => organizacion.usuario)
   organizacion: Organizacion;
+
+  @OneToMany(() => PreferenciaUsuario, (preferenciaUsuario) => preferenciaUsuario.usuario)
+  preferencias: PreferenciaUsuario[];
+
+  @OneToMany(() => ConfiguracionSeguridad, (configuracionSeguridad) => configuracionSeguridad.usuario)
+  configuracionesSeguridad: ConfiguracionSeguridad[];
+
+  @OneToMany(() => Integracion, (integracion) => integracion.usuario)
+  integraciones: Integracion[];
 }

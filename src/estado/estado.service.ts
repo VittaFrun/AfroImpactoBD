@@ -12,8 +12,21 @@ export class EstadoService {
     private readonly repo: Repository<Estado>,
   ) {}
 
-  create(dto: CreateEstadoDto) {
-    return this.repo.save(dto);
+  async create(dto: CreateEstadoDto) {
+    // Verificar si ya existe un estado con el mismo nombre
+    const existingEstado = await this.repo.findOne({
+      where: { nombre: dto.nombre.trim() }
+    });
+    
+    if (existingEstado) {
+      throw new Error(`Ya existe un estado con el nombre "${dto.nombre.trim()}"`);
+    }
+    
+    const estado = this.repo.create({
+      nombre: dto.nombre.trim()
+    });
+    
+    return this.repo.save(estado);
   }
 
   findAll() {

@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Usuario } from '../users/user.entity';
 import { Permiso } from '../permiso/permiso.entity';
+import { Organizacion } from '../organizacion/organizacion.entity';
+import { Proyecto } from '../proyecto/proyecto.entity';
 
 @Entity({ name: 'rol' })
 export class Rol {
@@ -12,6 +14,44 @@ export class Rol {
 
   @Column({ length: 255 })
   descripcion: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['sistema', 'organizacion', 'proyecto'],
+    name: 'tipo_rol',
+    default: 'sistema'
+  })
+  tipo_rol: 'sistema' | 'organizacion' | 'proyecto';
+
+  @Column({ name: 'id_organizacion', nullable: true })
+  id_organizacion: number | null;
+
+  @ManyToOne(() => Organizacion, { nullable: true })
+  @JoinColumn({ name: 'id_organizacion' })
+  organizacion: Organizacion | null;
+
+  @Column({ name: 'id_proyecto', nullable: true })
+  id_proyecto: number | null;
+
+  @ManyToOne(() => Proyecto, { nullable: true })
+  @JoinColumn({ name: 'id_proyecto' })
+  proyecto: Proyecto | null;
+
+  @Column({ default: true })
+  activo: boolean;
+
+  @Column({ name: 'creado_por', nullable: true })
+  creado_por: number | null;
+
+  @ManyToOne(() => Usuario, { nullable: true })
+  @JoinColumn({ name: 'creado_por' })
+  creador: Usuario | null;
+
+  @CreateDateColumn({ name: 'creado_en' })
+  creado_en: Date;
+
+  @UpdateDateColumn({ name: 'actualizado_en' })
+  actualizado_en: Date;
 
   @OneToMany(() => Usuario, (usuario) => usuario.rol)
   usuarios: Usuario[];

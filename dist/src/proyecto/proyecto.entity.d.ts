@@ -5,17 +5,26 @@ import { Movimiento } from '../movimiento/movimiento.entity';
 import { Reporte } from '../reporte/reporte.entity';
 import { Evaluacion } from '../evaluacion/evaluacion.entity';
 import { Organizacion } from '../organizacion/organizacion.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
+import { Certificado } from '../certificado/certificado.entity';
+import { ProyectoBeneficio } from '../proyecto-beneficio/proyecto-beneficio.entity';
+import { SolicitudInscripcion } from '../solicitud-inscripcion/solicitud-inscripcion.entity';
+import { FormularioInscripcion } from '../formulario-inscripcion/formulario-inscripcion.entity';
+import { Rol } from '../rol/rol.entity';
 export declare class Proyecto {
     id_proyecto: number;
     nombre: string;
     descripcion: string;
     objetivo: string;
     ubicacion: string;
+    categoria: string;
     fecha_inicio: Date;
     fecha_fin: Date;
     imagen_principal: string;
     documento: string;
     presupuesto_total: number;
+    es_publico: boolean;
+    requisitos: string;
     id_estado: number;
     estado: Estado;
     id_organizacion: number;
@@ -27,4 +36,10 @@ export declare class Proyecto {
     movimientos: Movimiento[];
     reportes: Reporte[];
     evaluaciones: Evaluacion[];
+    horasVoluntariadas: HorasVoluntariadas[];
+    certificados: Certificado[];
+    beneficio: ProyectoBeneficio;
+    solicitudes: SolicitudInscripcion[];
+    formularios: FormularioInscripcion[];
+    roles: Rol[];
 }

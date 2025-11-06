@@ -12,14 +12,18 @@ const typeorm_1 = require("@nestjs/typeorm");
 const rol_entity_1 = require("./rol.entity");
 const rol_service_1 = require("./rol.service");
 const rol_controller_1 = require("./rol.controller");
+const organizacion_entity_1 = require("../organizacion/organizacion.entity");
+const proyecto_entity_1 = require("../proyecto/proyecto.entity");
+const asignacion_entity_1 = require("../asignacion/asignacion.entity");
 let RolModule = class RolModule {
 };
 exports.RolModule = RolModule;
 exports.RolModule = RolModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([rol_entity_1.Rol])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([rol_entity_1.Rol, organizacion_entity_1.Organizacion, proyecto_entity_1.Proyecto, asignacion_entity_1.Asignacion])],
         controllers: [rol_controller_1.RolController],
         providers: [rol_service_1.RolService],
+        exports: [rol_service_1.RolService],
     })
 ], RolModule);
 //# sourceMappingURL=rol.module.js.map

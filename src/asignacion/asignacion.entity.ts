@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Tarea } from '../tarea/tarea.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
+import { Rol } from '../rol/rol.entity';
 
 @Entity({ name: 'asignacion' })
 export class Asignacion {
@@ -21,6 +22,10 @@ export class Asignacion {
   @JoinColumn({ name: 'id_voluntario' })
   voluntario: Voluntario;
 
-  @Column({ length: 100, name: 'rol_asignado' })
-  rol_asignado: string;
+  @Column({ name: 'id_rol' })
+  id_rol: number;
+
+  @ManyToOne(() => Rol)
+  @JoinColumn({ name: 'id_rol' })
+  rol: Rol;
 }

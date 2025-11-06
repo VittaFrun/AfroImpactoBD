@@ -5,10 +5,10 @@ import { Usuario } from './users/user.entity';
 import { Rol } from './rol/rol.entity';
 
 // 👇 Asegúrate de importar tu módulo correctamente
-import { UsersModule } from './users/users.module'; // ruta corregida
+import { UsersModule } from './users/users.module'; 
 import { ProyectoModule } from './proyecto/proyecto.module';
 import { AuthModule } from './auth/auth.module';
-import { RolModule } from './rol/rol.module'; // <--- AÑADE ESTA LÍNEA
+import { RolModule } from './rol/rol.module'; 
 import { PermisoModule } from './permiso/permiso.module';
 import { DisponibilidadModule } from './disponibilidad/disponibilidad.module';
 import { MetodoPagoModule } from './metodopago/metodopago.module';
@@ -17,6 +17,20 @@ import { ArchivoModule } from './archivo/archivo.module';
 import { DonacionModule } from './donacion/donacion.module';
 import { OrganizacionModule } from './organizacion/organizacion.module';
 import { VoluntarioModule } from './voluntario/voluntario.module';
+import { AsignacionModule } from './asignacion/asignacion.module';
+import { TareaModule } from './tarea/tarea.module';
+import { MovimientoModule } from './movimiento/movimiento.module';
+import { DonacionProyectoModule } from './donacion-proyecto/donacion-proyecto.module';
+import { ReporteModule } from './reporte/reporte.module';
+import { JornadaModule } from './jornada/jornada.module';
+import { VoluntarioHabilidadModule } from './voluntario-habilidad/voluntario-habilidad.module';
+import { HabilidadModule } from './habilidad/habilidad.module';
+import { FaseModule } from './fase/fase.module';
+import { EstadoModule } from './estado/estado.module';
+import { ProyectoBeneficioModule } from './proyecto-beneficio/proyecto-beneficio.module';
+import { SolicitudInscripcionModule } from './solicitud-inscripcion/solicitud-inscripcion.module';
+import { FormularioInscripcionModule } from './formulario-inscripcion/formulario-inscripcion.module';
+import { DocumentoSolicitudModule } from './documento-solicitud/documento-solicitud.module';
 
 @Module({
   imports: [
@@ -34,15 +48,15 @@ import { VoluntarioModule } from './voluntario/voluntario.module';
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        entities: [__dirname + '/**/*.entity{.ts,.js}', Usuario, Rol],
-        synchronize: false, // Temporalmente habilitado para sincronizar la DB
+        // Con autoLoadEntities no es necesario declarar entidades manualmente
+        synchronize: false,
       }),
     }),
     // 👇 Aquí agregas tu módulo
     UsersModule,
     ProyectoModule,
     AuthModule,
-    RolModule, // <--- Y AÑADE ESTA LÍNEA AQUÍ
+    RolModule,
     PermisoModule,
     DisponibilidadModule,
     MetodoPagoModule,
@@ -51,6 +65,20 @@ import { VoluntarioModule } from './voluntario/voluntario.module';
     DonacionModule,
     OrganizacionModule,
     VoluntarioModule,
+    AsignacionModule,
+    TareaModule,
+    MovimientoModule,
+    DonacionProyectoModule,
+    ReporteModule,
+    JornadaModule,
+    VoluntarioHabilidadModule,
+    HabilidadModule,
+    FaseModule,
+    EstadoModule,
+    ProyectoBeneficioModule,
+    DocumentoSolicitudModule,
+    SolicitudInscripcionModule,
+    FormularioInscripcionModule,
   ],
 })
 export class AppModule {}

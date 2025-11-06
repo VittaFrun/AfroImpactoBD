@@ -8,5 +8,8 @@ export declare class CreateProyectoDto {
     imagen_principal?: string;
     documento?: string;
     presupuesto_total?: number;
-    id_estado: number;
+    id_estado?: number;
+    es_publico?: boolean;
+    categoria?: string;
+    requisitos?: string;
 }

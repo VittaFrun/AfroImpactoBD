@@ -5,7 +5,7 @@ import { UpdateEstadoDto } from './update-estado.dto';
 export declare class EstadoService {
     private readonly repo;
     constructor(repo: Repository<Estado>);
-    create(dto: CreateEstadoDto): Promise<CreateEstadoDto & Estado>;
+    create(dto: CreateEstadoDto): Promise<Estado>;
     findAll(): Promise<Estado[]>;
     findOne(id: number): Promise<Estado>;
     update(id: number, dto: UpdateEstadoDto): Promise<import("typeorm").UpdateResult>;

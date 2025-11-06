@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -62,10 +62,24 @@ export class AuthService {
       id_rol: registerDto.id_rol,
     });
 
-    if (registerDto.tipo_usuario === 'voluntario') {
-      await this.voluntarioService.createBasic(newUser.id_usuario);
-    } else if (registerDto.tipo_usuario === 'organizacion') {
-      await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
+    // Crear perfil específico según el tipo de usuario
+    try {
+      if (registerDto.tipo_usuario === 'voluntario') {
+        await this.voluntarioService.createBasic(newUser.id_usuario);
+      } else if (registerDto.tipo_usuario === 'organizacion') {
+        await this.organizacionService.createBasic(newUser.id_usuario, registerDto.nombre, registerDto.tipo_usuario);
+      }
+    } catch (error) {
+      console.error(`Error al crear perfil de ${registerDto.tipo_usuario}:`, error);
+      // Si falla la creación del perfil, eliminar el usuario creado para mantener consistencia
+      try {
+        await this.usersService.remove(newUser.id_usuario);
+      } catch (deleteError) {
+        console.error('Error al eliminar usuario después de fallo en creación de perfil:', deleteError);
+      }
+      throw new BadRequestException(
+        `Error al crear el perfil de ${registerDto.tipo_usuario}. Por favor, intenta nuevamente.`
+      );
     }
 
     //Devuelve el usuario creado sin la contraseña

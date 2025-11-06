@@ -24,6 +24,10 @@ __decorate([
     __metadata("design:type", String)
 ], Reporte.prototype, "tipo", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ length: 20, default: 'PDF' }),
+    __metadata("design:type", String)
+], Reporte.prototype, "formato", void 0);
+__decorate([
     (0, typeorm_1.Column)('date'),
     __metadata("design:type", Date)
 ], Reporte.prototype, "fecha", void 0);
@@ -31,6 +35,18 @@ __decorate([
     (0, typeorm_1.Column)('text'),
     __metadata("design:type", String)
 ], Reporte.prototype, "contenido", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ length: 20, default: 'pendiente' }),
+    __metadata("design:type", String)
+], Reporte.prototype, "estado", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'incluir_graficos', default: true }),
+    __metadata("design:type", Boolean)
+], Reporte.prototype, "incluir_graficos", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Reporte.prototype, "descargas", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'id_proyecto' }),
     __metadata("design:type", Number)
@@ -40,6 +56,14 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'id_proyecto' }),
     __metadata("design:type", proyecto_entity_1.Proyecto)
 ], Reporte.prototype, "proyecto", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({ name: 'creado_en' }),
+    __metadata("design:type", Date)
+], Reporte.prototype, "creado_en", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)({ name: 'actualizado_en' }),
+    __metadata("design:type", Date)
+], Reporte.prototype, "actualizado_en", void 0);
 exports.Reporte = Reporte = __decorate([
     (0, typeorm_1.Entity)({ name: 'reporte' })
 ], Reporte);

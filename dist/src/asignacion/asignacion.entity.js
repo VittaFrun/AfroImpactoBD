@@ -13,6 +13,7 @@ exports.Asignacion = void 0;
 const typeorm_1 = require("typeorm");
 const tarea_entity_1 = require("../tarea/tarea.entity");
 const voluntario_entity_1 = require("../voluntario/voluntario.entity");
+const rol_entity_1 = require("../rol/rol.entity");
 let Asignacion = class Asignacion {
 };
 exports.Asignacion = Asignacion;
@@ -39,9 +40,14 @@ __decorate([
     __metadata("design:type", voluntario_entity_1.Voluntario)
 ], Asignacion.prototype, "voluntario", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100, name: 'rol_asignado' }),
-    __metadata("design:type", String)
-], Asignacion.prototype, "rol_asignado", void 0);
+    (0, typeorm_1.Column)({ name: 'id_rol' }),
+    __metadata("design:type", Number)
+], Asignacion.prototype, "id_rol", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => rol_entity_1.Rol),
+    (0, typeorm_1.JoinColumn)({ name: 'id_rol' }),
+    __metadata("design:type", rol_entity_1.Rol)
+], Asignacion.prototype, "rol", void 0);
 exports.Asignacion = Asignacion = __decorate([
     (0, typeorm_1.Entity)({ name: 'asignacion' })
 ], Asignacion);

@@ -8,9 +8,10 @@ import { Fase } from '../fase/fase.entity';
 import { Proyecto } from '../proyecto/proyecto.entity';
 import { Organizacion } from '../organizacion/organizacion.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
+import { Rol } from '../rol/rol.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Asignacion, Tarea, Fase, Proyecto, Organizacion, Voluntario])],
+  imports: [TypeOrmModule.forFeature([Asignacion, Tarea, Fase, Proyecto, Organizacion, Voluntario, Rol])],
   controllers: [AsignacionController],
   providers: [AsignacionService],
 })
