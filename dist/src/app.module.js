@@ -36,6 +36,7 @@ const proyecto_beneficio_module_1 = require("./proyecto-beneficio/proyecto-benef
 const solicitud_inscripcion_module_1 = require("./solicitud-inscripcion/solicitud-inscripcion.module");
 const formulario_inscripcion_module_1 = require("./formulario-inscripcion/formulario-inscripcion.module");
 const documento_solicitud_module_1 = require("./documento-solicitud/documento-solicitud.module");
+const horas_voluntariadas_module_1 = require("./horas-voluntariadas/horas-voluntariadas.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -85,6 +86,7 @@ exports.AppModule = AppModule = __decorate([
             documento_solicitud_module_1.DocumentoSolicitudModule,
             solicitud_inscripcion_module_1.SolicitudInscripcionModule,
             formulario_inscripcion_module_1.FormularioInscripcionModule,
+            horas_voluntariadas_module_1.HorasVoluntariadasModule,
         ],
     })
 ], AppModule);

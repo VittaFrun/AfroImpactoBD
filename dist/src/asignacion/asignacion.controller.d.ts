@@ -7,5 +7,6 @@ export declare class AsignacionController {
     create(dto: CreateAsignacionDto, user: Usuario): Promise<import("./asignacion.entity").Asignacion>;
     findAllByTarea(idTarea: string): Promise<import("./asignacion.entity").Asignacion[]>;
     findMyTasks(user: Usuario): Promise<import("./asignacion.entity").Asignacion[]>;
+    findAsignacionesByProyecto(idProyecto: string, user: Usuario): Promise<import("./asignacion.entity").Asignacion[]>;
     remove(id: string, user: Usuario): Promise<import("./asignacion.entity").Asignacion>;
 }

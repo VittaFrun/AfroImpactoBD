@@ -37,7 +37,10 @@ let ProyectoController = class ProyectoController {
     findAll(user) {
         return this.service.findAll(user);
     }
-    findOne(id) {
+    findOne(id, user) {
+        if (user && user.tipo_usuario === 'voluntario') {
+            return this.service.findOneForVolunteer(+id, user.id_usuario);
+        }
         return this.service.findOne(+id);
     }
     update(id, dto, user) {
@@ -102,8 +105,9 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('organizacion', 'voluntario', 'admin'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], ProyectoController.prototype, "findOne", null);
 __decorate([

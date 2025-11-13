@@ -42,7 +42,7 @@ export declare class ProyectoController {
         solicitudes: import("../solicitud-inscripcion/solicitud-inscripcion.entity").SolicitudInscripcion[];
         formularios: import("../formulario-inscripcion/formulario-inscripcion.entity").FormularioInscripcion[];
     }[]>;
-    findOne(id: string): Promise<import("./proyecto.entity").Proyecto>;
+    findOne(id: string, user?: Usuario): Promise<import("./proyecto.entity").Proyecto>;
     update(id: string, dto: UpdateProyectoDto, user: Usuario): Promise<import("./proyecto.entity").Proyecto>;
     remove(id: string, user: Usuario): Promise<import("./proyecto.entity").Proyecto>;
     getPhases(id: string): Promise<import("./proyecto.entity").Proyecto>;

@@ -34,6 +34,9 @@ let AsignacionController = class AsignacionController {
     findMyTasks(user) {
         return this.service.findTasksByVoluntario(user.id_usuario);
     }
+    findAsignacionesByProyecto(idProyecto, user) {
+        return this.service.findAsignacionesByProyecto(+idProyecto, user.id_usuario);
+    }
     remove(id, user) {
         return this.service.remove(+id, user);
     }
@@ -64,6 +67,15 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.Usuario]),
     __metadata("design:returntype", void 0)
 ], AsignacionController.prototype, "findMyTasks", null);
+__decorate([
+    (0, common_1.Get)('voluntario/proyecto/:idProyecto'),
+    (0, roles_decorator_1.Roles)('voluntario'),
+    __param(0, (0, common_1.Param)('idProyecto')),
+    __param(1, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, user_entity_1.Usuario]),
+    __metadata("design:returntype", void 0)
+], AsignacionController.prototype, "findAsignacionesByProyecto", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, roles_decorator_1.Roles)('organizacion', 'admin'),

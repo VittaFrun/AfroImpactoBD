@@ -196,7 +196,7 @@ export class HorasVoluntariadasService {
       throw new ForbiddenException('Solo las organizaciones pueden ver todas las horas del proyecto');
     }
 
-    const proyecto = await this.proyectoRepo.findOne({ where: { id_proyecto } });
+    const proyecto = await this.proyectoRepo.findOne({ where: { id_proyecto: idProyecto } });
     if (!proyecto) {
       throw new NotFoundException(`Proyecto con ID ${idProyecto} no encontrado`);
     }

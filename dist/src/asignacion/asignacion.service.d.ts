@@ -19,6 +19,7 @@ export declare class AsignacionService {
     validateRolForProject(id_rol: number, id_proyecto: number): Promise<boolean>;
     findAllByTarea(idTarea: number): Promise<Asignacion[]>;
     findTasksByVoluntario(id_usuario: number): Promise<Asignacion[]>;
+    findAsignacionesByProyecto(id_proyecto: number, id_usuario: number): Promise<Asignacion[]>;
     remove(id: number, user: Usuario): Promise<Asignacion>;
     private checkOrganizacionOwnership;
 }

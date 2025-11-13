@@ -98,6 +98,18 @@ let AsignacionService = class AsignacionService {
             relations: ['tarea', 'rol']
         });
     }
+    async findAsignacionesByProyecto(id_proyecto, id_usuario) {
+        const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario } });
+        if (!voluntario) {
+            throw new common_1.NotFoundException('Voluntario no encontrado');
+        }
+        const asignaciones = await this.repo.find({
+            where: { id_voluntario: voluntario.id_voluntario },
+            relations: ['tarea', 'tarea.fase', 'tarea.estado', 'rol']
+        });
+        const asignacionesProyecto = asignaciones.filter(a => { var _a, _b; return ((_b = (_a = a.tarea) === null || _a === void 0 ? void 0 : _a.fase) === null || _b === void 0 ? void 0 : _b.id_proyecto) === id_proyecto; });
+        return asignacionesProyecto;
+    }
     async remove(id, user) {
         const asignacion = await this.repo.findOne({
             where: { id_asignacion: id },

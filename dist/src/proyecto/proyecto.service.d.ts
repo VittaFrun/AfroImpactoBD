@@ -12,6 +12,7 @@ import { ProyectoBeneficio } from '../proyecto-beneficio/proyecto-beneficio.enti
 import { Asignacion } from '../asignacion/asignacion.entity';
 import { Voluntario } from '../voluntario/voluntario.entity';
 import { Rol } from '../rol/rol.entity';
+import { HorasVoluntariadas } from '../horas-voluntariadas/horas-voluntariadas.entity';
 export declare class ProyectoService {
     private readonly repo;
     private readonly orgRepo;
@@ -21,7 +22,8 @@ export declare class ProyectoService {
     private readonly asignacionRepo;
     private readonly voluntarioRepo;
     private readonly rolRepo;
-    constructor(repo: Repository<Proyecto>, orgRepo: Repository<Organizacion>, faseRepo: Repository<Fase>, tareaRepo: Repository<Tarea>, beneficioRepo: Repository<ProyectoBeneficio>, asignacionRepo: Repository<Asignacion>, voluntarioRepo: Repository<Voluntario>, rolRepo: Repository<Rol>);
+    private readonly horasRepo;
+    constructor(repo: Repository<Proyecto>, orgRepo: Repository<Organizacion>, faseRepo: Repository<Fase>, tareaRepo: Repository<Tarea>, beneficioRepo: Repository<ProyectoBeneficio>, asignacionRepo: Repository<Asignacion>, voluntarioRepo: Repository<Voluntario>, rolRepo: Repository<Rol>, horasRepo: Repository<HorasVoluntariadas>);
     create(dto: CreateProyectoDto, user: Usuario): Promise<Proyecto>;
     findAll(user: Usuario): Promise<Proyecto[] | {
         rolesAsignados: any;
@@ -50,7 +52,7 @@ export declare class ProyectoService {
         movimientos: import("../movimiento/movimiento.entity").Movimiento[];
         reportes: import("../reporte/reporte.entity").Reporte[];
         evaluaciones: import("../evaluacion/evaluacion.entity").Evaluacion[];
-        horasVoluntariadas: import("../horas-voluntariadas/horas-voluntariadas.entity").HorasVoluntariadas[];
+        horasVoluntariadas: HorasVoluntariadas[];
         certificados: import("../certificado/certificado.entity").Certificado[];
         beneficio: ProyectoBeneficio;
         solicitudes: import("../solicitud-inscripcion/solicitud-inscripcion.entity").SolicitudInscripcion[];
@@ -93,10 +95,56 @@ export declare class ProyectoService {
         movimientos: import("../movimiento/movimiento.entity").Movimiento[];
         reportes: import("../reporte/reporte.entity").Reporte[];
         evaluaciones: import("../evaluacion/evaluacion.entity").Evaluacion[];
-        horasVoluntariadas: import("../horas-voluntariadas/horas-voluntariadas.entity").HorasVoluntariadas[];
+        horasVoluntariadas: HorasVoluntariadas[];
         certificados: import("../certificado/certificado.entity").Certificado[];
         beneficio: ProyectoBeneficio;
         solicitudes: import("../solicitud-inscripcion/solicitud-inscripcion.entity").SolicitudInscripcion[];
         formularios: import("../formulario-inscripcion/formulario-inscripcion.entity").FormularioInscripcion[];
     }[]>;
+    findOneForVolunteer(id_proyecto: number, id_usuario: number): Promise<{
+        rolesAsignados: Rol[];
+        asignaciones: Asignacion[];
+        horas: HorasVoluntariadas[];
+        resumenHoras: {
+            totalHoras: number;
+            horasVerificadas: number;
+            horasPendientes: number;
+            totalRegistros: number;
+        };
+        progresoPersonal: {
+            tareasAsignadas: number;
+            tareasCompletadas: number;
+            porcentajeCompletado: number;
+        };
+        id_proyecto: number;
+        nombre: string;
+        descripcion: string;
+        objetivo: string;
+        ubicacion: string;
+        categoria: string;
+        fecha_inicio: Date;
+        fecha_fin: Date;
+        imagen_principal: string;
+        documento: string;
+        presupuesto_total: number;
+        es_publico: boolean;
+        requisitos: string;
+        id_estado: number;
+        estado: import("../estado/estado.entity").Estado;
+        id_organizacion: number;
+        organizacion: Organizacion;
+        creado_en: Date;
+        actualizado_en: Date;
+        fases: Fase[];
+        donacionProyectos: import("../donacion-proyecto/donacion-proyecto.entity").DonacionProyecto[];
+        movimientos: import("../movimiento/movimiento.entity").Movimiento[];
+        reportes: import("../reporte/reporte.entity").Reporte[];
+        evaluaciones: import("../evaluacion/evaluacion.entity").Evaluacion[];
+        horasVoluntariadas: HorasVoluntariadas[];
+        certificados: import("../certificado/certificado.entity").Certificado[];
+        beneficio: ProyectoBeneficio;
+        solicitudes: import("../solicitud-inscripcion/solicitud-inscripcion.entity").SolicitudInscripcion[];
+        formularios: import("../formulario-inscripcion/formulario-inscripcion.entity").FormularioInscripcion[];
+        roles: Rol[];
+    }>;
 }

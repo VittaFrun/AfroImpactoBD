@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proyecto } from './proyecto.entity';
@@ -79,7 +79,7 @@ export class ProyectoService {
       ubicacion: dto.ubicacion.trim(),
       fecha_inicio: dto.fecha_inicio,
       fecha_fin: dto.fecha_fin,
-      imagen_principal: dto.imagen_principal || null,
+      imagen_principal: dto.imagen_principal || '/assets/images/background_login.png',
       documento: dto.documento || null,
       presupuesto_total: dto.presupuesto_total || 0,
       categoria: dto.categoria || null,
@@ -319,7 +319,27 @@ export class ProyectoService {
     if (user.tipo_usuario !== 'admin' && proyecto.id_organizacion !== organizacion.id_organizacion) {
       throw new ForbiddenException('No tienes permiso para eliminar este proyecto.');
     }
-    return this.repo.remove(proyecto);
+
+    try {
+      return await this.repo.remove(proyecto);
+    } catch (error) {
+      // Manejar errores de restricciones de claves foráneas
+      const errorMessage = error.message || '';
+      const errorCode = error.code || '';
+      
+      if (
+        errorCode === 'ER_ROW_IS_REFERENCED_2' || 
+        errorCode === '23503' ||
+        errorMessage.includes('foreign key constraint') ||
+        errorMessage.includes('Cannot delete or update a parent row')
+      ) {
+        throw new BadRequestException(
+          'No se puede eliminar el proyecto porque tiene registros relacionados (solicitudes, asignaciones, donaciones, etc.). Por favor, elimina primero todos los registros relacionados.'
+        );
+      }
+      // Re-lanzar otros errores
+      throw error;
+    }
   }
 
   // --- MÉTODOS PARA GESTIONAR FASES ---

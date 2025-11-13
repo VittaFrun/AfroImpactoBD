@@ -24,8 +24,9 @@ const proyecto_beneficio_entity_1 = require("../proyecto-beneficio/proyecto-bene
 const asignacion_entity_1 = require("../asignacion/asignacion.entity");
 const voluntario_entity_1 = require("../voluntario/voluntario.entity");
 const rol_entity_1 = require("../rol/rol.entity");
+const horas_voluntariadas_entity_1 = require("../horas-voluntariadas/horas-voluntariadas.entity");
 let ProyectoService = class ProyectoService {
-    constructor(repo, orgRepo, faseRepo, tareaRepo, beneficioRepo, asignacionRepo, voluntarioRepo, rolRepo) {
+    constructor(repo, orgRepo, faseRepo, tareaRepo, beneficioRepo, asignacionRepo, voluntarioRepo, rolRepo, horasRepo) {
         this.repo = repo;
         this.orgRepo = orgRepo;
         this.faseRepo = faseRepo;
@@ -34,6 +35,7 @@ let ProyectoService = class ProyectoService {
         this.asignacionRepo = asignacionRepo;
         this.voluntarioRepo = voluntarioRepo;
         this.rolRepo = rolRepo;
+        this.horasRepo = horasRepo;
     }
     async create(dto, user) {
         if (!dto.nombre || dto.nombre.trim() === '') {
@@ -69,7 +71,7 @@ let ProyectoService = class ProyectoService {
             ubicacion: dto.ubicacion.trim(),
             fecha_inicio: dto.fecha_inicio,
             fecha_fin: dto.fecha_fin,
-            imagen_principal: dto.imagen_principal || null,
+            imagen_principal: dto.imagen_principal || '/assets/images/background_login.png',
             documento: dto.documento || null,
             presupuesto_total: dto.presupuesto_total || 0,
             categoria: dto.categoria || null,
@@ -295,7 +297,20 @@ let ProyectoService = class ProyectoService {
         if (user.tipo_usuario !== 'admin' && proyecto.id_organizacion !== organizacion.id_organizacion) {
             throw new common_1.ForbiddenException('No tienes permiso para eliminar este proyecto.');
         }
-        return this.repo.remove(proyecto);
+        try {
+            return await this.repo.remove(proyecto);
+        }
+        catch (error) {
+            const errorMessage = error.message || '';
+            const errorCode = error.code || '';
+            if (errorCode === 'ER_ROW_IS_REFERENCED_2' ||
+                errorCode === '23503' ||
+                errorMessage.includes('foreign key constraint') ||
+                errorMessage.includes('Cannot delete or update a parent row')) {
+                throw new common_1.BadRequestException('No se puede eliminar el proyecto porque tiene registros relacionados (solicitudes, asignaciones, donaciones, etc.). Por favor, elimina primero todos los registros relacionados.');
+            }
+            throw error;
+        }
     }
     async addFase(proyectoId, dto, user) {
         const proyecto = await this.findOne(proyectoId);
@@ -487,6 +502,51 @@ let ProyectoService = class ProyectoService {
             return [];
         }
     }
+    async findOneForVolunteer(id_proyecto, id_usuario) {
+        const proyecto = await this.findOne(id_proyecto);
+        if (!proyecto) {
+            throw new common_1.NotFoundException(`Proyecto con ID ${id_proyecto} no encontrado`);
+        }
+        const voluntario = await this.voluntarioRepo.findOne({ where: { id_usuario } });
+        if (!voluntario) {
+            throw new common_1.NotFoundException('Voluntario no encontrado');
+        }
+        const asignaciones = await this.asignacionRepo.find({
+            where: { id_voluntario: voluntario.id_voluntario },
+            relations: ['tarea', 'tarea.fase', 'tarea.estado', 'rol']
+        });
+        const asignacionesProyecto = asignaciones.filter(a => { var _a, _b; return ((_b = (_a = a.tarea) === null || _a === void 0 ? void 0 : _a.fase) === null || _b === void 0 ? void 0 : _b.id_proyecto) === id_proyecto; });
+        const rolesAsignados = asignacionesProyecto
+            .map(a => a.rol)
+            .filter((rol, index, self) => rol && index === self.findIndex(r => r && r.id_rol === rol.id_rol));
+        const horas = await this.horasRepo.find({
+            where: {
+                id_voluntario: voluntario.id_voluntario,
+                id_proyecto: id_proyecto
+            },
+            relations: ['tarea'],
+            order: { fecha: 'DESC', creado_en: 'DESC' }
+        });
+        const totalHoras = horas.reduce((sum, h) => sum + parseFloat(h.horas_trabajadas.toString()), 0);
+        const horasVerificadas = horas.filter(h => h.verificada).reduce((sum, h) => sum + parseFloat(h.horas_trabajadas.toString()), 0);
+        const tareasCompletadas = asignacionesProyecto.filter(a => {
+            var _a, _b, _c;
+            const estado = (_a = a.tarea) === null || _a === void 0 ? void 0 : _a.estado;
+            return estado && (((_b = estado.nombre) === null || _b === void 0 ? void 0 : _b.toLowerCase().includes('complet')) || ((_c = estado.nombre) === null || _c === void 0 ? void 0 : _c.toLowerCase().includes('finaliz')));
+        }).length;
+        return Object.assign(Object.assign({}, proyecto), { rolesAsignados: rolesAsignados, asignaciones: asignacionesProyecto, horas: horas, resumenHoras: {
+                totalHoras: parseFloat(totalHoras.toFixed(2)),
+                horasVerificadas: parseFloat(horasVerificadas.toFixed(2)),
+                horasPendientes: parseFloat((totalHoras - horasVerificadas).toFixed(2)),
+                totalRegistros: horas.length
+            }, progresoPersonal: {
+                tareasAsignadas: asignacionesProyecto.length,
+                tareasCompletadas: tareasCompletadas,
+                porcentajeCompletado: asignacionesProyecto.length > 0
+                    ? Math.round((tareasCompletadas / asignacionesProyecto.length) * 100)
+                    : 0
+            } });
+    }
 };
 exports.ProyectoService = ProyectoService;
 exports.ProyectoService = ProyectoService = __decorate([
@@ -499,7 +559,9 @@ exports.ProyectoService = ProyectoService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(asignacion_entity_1.Asignacion)),
     __param(6, (0, typeorm_1.InjectRepository)(voluntario_entity_1.Voluntario)),
     __param(7, (0, typeorm_1.InjectRepository)(rol_entity_1.Rol)),
+    __param(8, (0, typeorm_1.InjectRepository)(horas_voluntariadas_entity_1.HorasVoluntariadas)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
